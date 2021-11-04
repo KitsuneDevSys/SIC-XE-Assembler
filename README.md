@@ -1,2 +1,2 @@
 # SIC-XE-Assembler
-TEST
+This is a placeholder.
