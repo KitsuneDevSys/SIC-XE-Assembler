@@ -1,6 +1,5 @@
 #include "headers.h"
 
-
 int main( int argc, char* argv[]){
 	FILE *fp; //Used to read a SIC assembly file
 	FILE *wp; //Used to write to a Object assembly file
