@@ -19,7 +19,7 @@ struct opcodes {
 
 typedef struct opcodes OPCODES;
 
-OPCODES OpcodeTable[ 32 ];
+//OPCODES OpcodeTable[ 32 ];
 
 struct records 
 {

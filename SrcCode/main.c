@@ -49,7 +49,7 @@ int main( int argc, char* argv[]){
 	
 	long Ws; //Used to store the size from a WORD directive
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
-       	{
+    {
 	printf("ERROR: Usage: %s filename\n", argv[0]);
 	return 0;
 	}
@@ -60,7 +60,7 @@ int main( int argc, char* argv[]){
 	
 	
 	if ( fp == NULL ) //Checks if file is able to be opened
-       	{
+    {
 	printf("ERROR: %s could not be opened for reading,\n", argv[1] );
 	return 0;
 	}

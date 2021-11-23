@@ -19,4 +19,4 @@ opcodes.o: opcodes.c headers.h
 clean:	
 	rm *.o -f
 	touch *.c
-	rm project1 -f
+	rm project4 -f
