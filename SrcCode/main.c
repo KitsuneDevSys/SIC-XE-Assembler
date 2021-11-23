@@ -170,9 +170,9 @@ int main( int argc, char* argv[]){
 			{
 				strcat(hex,nexoperand);
 				locctr = (int) strtol(hex,NULL,0);
-				if(locctr >= 0x8000)//checks to see if addresss starts at 8000 in hex (32768 in decimal) or higher; thus exceeding memmory limit
+				if(locctr >= 0x10000)//checks to see if addresss starts at 10000 in hex (1048576 in decimal) or higher; thus exceeding memmory limit
 				{
-					printf("ERROR: SIC program starts at Hex 8000 or higher(no room in memory) on line %d\n",linectr);
+					printf("ERROR: SIC program starts at Hex 10000 or higher(no room in memory) on line %d\n",linectr);
 					fclose(fp);
 					return 0;
 				}
@@ -342,7 +342,7 @@ int main( int argc, char* argv[]){
 					 RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
 					  if((!(strcmp(postfix, "X"))) == 1) //Used to prevent RSUB from creating Modification Records
 						{
-							 RecTab[rindex].opaddress += 0x8000; //Offsets opaddress by 8000 if an X postfix is present in the operand
+							 RecTab[rindex].opaddress += 0x10000; //Offsets opaddress by 10000 if an X postfix is present in the operand
 						}
 					 break;
 				  }
@@ -432,7 +432,7 @@ int main( int argc, char* argv[]){
 				if((!(strcmp(prefix, "C"))) == 1)
 				{
 					char CharacterToHex;
-					char StringBuffer[8000]; 
+					char StringBuffer[10000]; 
 					strcpy(hex,""); //resets hex to empty string for use in getting the hex from a string within the C prefix
 					int ByteTextLimit=30;
 				    int ByteStringLength;

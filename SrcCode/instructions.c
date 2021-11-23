@@ -29,6 +29,39 @@ return		( 	! (
 		 strcmp( Test, "SUB" ) &&
 		 strcmp( Test, "TD" ) &&
 		 strcmp( Test, "TIX" ) &&
-		 strcmp( Test, "WD" ) 
+		 strcmp( Test, "WD" )	&&
+		 strcmp( Test, "ADDF" ) &&      //XE instructions start here. 
+		 strcmp( Test, "ADDR" ) &&
+		 strcmp( Test, "CLEAR" ) &&
+		 strcmp( Test, "COMPF" ) &&
+		 strcmp( Test, "COMPR" ) &&
+		 strcmp( Test, "DIVF" ) &&
+		 strcmp( Test, "DIVR" ) &&
+		 strcmp( Test, "FIX" ) &&
+		 strcmp( Test, "FLOAT" ) &&
+		 strcmp( Test, "HIO" ) &&
+		 strcmp( Test, "LDB" ) &&
+		 strcmp( Test, "LDF" ) &&
+		 strcmp( Test, "LDS" ) &&
+		 strcmp( Test, "LDT" ) &&
+		 strcmp( Test, "LPS" ) &&
+		 strcmp( Test, "MULF" ) &&
+		 strcmp( Test, "MULR" ) &&
+		 strcmp( Test, "NORM" ) &&
+		 strcmp( Test, "RMO" ) &&
+		 strcmp( Test, "SHIFTL" ) &&
+		 strcmp( Test, "SHIFTR" ) &&
+		 strcmp( Test, "SIO" ) &&
+		 strcmp( Test, "SSK" ) &&
+		 strcmp( Test, "STB" ) &&
+		 strcmp( Test, "STF" ) &&
+		 strcmp( Test, "STI" ) &&
+		 strcmp( Test, "STS" ) &&
+		 strcmp( Test, "STT" ) &&
+		 strcmp( Test, "SUBF" ) &&
+		 strcmp( Test, "SUBR" ) &&
+		 strcmp( Test, "SVC" ) &&
+		 strcmp( Test, "TIO" ) &&
+		 strcmp( Test, "TIXR" )
 		 ) ) ;
 }
