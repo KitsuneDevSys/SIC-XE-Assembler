@@ -35,7 +35,7 @@ int main( int argc, char* argv[]){
 	int uniques=0; //used to check if symbol is unique
 	int Wn=0; int Bn=0; //Used to store number of words and bytes for RESW and RESB
 	int hexc=1; //Used to check if the X' string is a valid hex (0=false 1=true)
-	//int SymIndex=0; //Used to print out the SymTab if no errors were found
+	int SymIndex=0; //Used to print out the SymTab if no errors were found
 	int oSymbol=0; //Used to check if an operand that is a referenced symbol is within the symbol table
 	int pLength; //Used to hold the value of the program length
 	int trecpath=1; //Used to insure that no faulty t-records are created
@@ -47,6 +47,11 @@ int main( int argc, char* argv[]){
 	int RecordOrder=1; //Used to print RecTab's contents in a specific order, 1=Header 2=Text 3=Modification 4=End
 	
 	long Ws; //Used to store the size from a WORD directive
+
+	//New Variables for SICXE Assembler
+	char opcode[1024]; //Stores a copy of the opcode
+
+
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
 	printf("ERROR: Usage: %s filename\n", argv[0]);
@@ -79,7 +84,7 @@ int main( int argc, char* argv[]){
        	{
 		strcpy( fullline, line );
 		//printf("%d is the number value", line[0]); //test
-		if(locctr > 0x7FFF) //checks if locctr is out of bounds for the set amount of memory our assemblier has (0x7FFF is max)
+		if(locctr > 0xFFFFF) //checks if locctr is out of bounds for the set amount of memory our assemblier has (0xFFFFF is max) (2^20 = 1048576 -> 0x100000)
 			{
 				printf("ERROR:Program has ran out of memory on line %d\n",linectr);
 				fclose(fp);
@@ -119,6 +124,9 @@ int main( int argc, char* argv[]){
 			if(path==1) //If line doesnt have the symbol parameter
 			{
 			 nextoken = strtok(line, " \t\n");
+			 strcpy(opcode, nextoken); //copys Intruction into a seperate char array for extracting the symbol
+			 printf("The opcode stored is %s\n",opcode); //TEST
+
 			 nexoperand = strtok(NULL,"\t");
 			 strcpy(operand, nexoperand); //copys operand into a seperate char array
 			 locctr+=3; //increments the locctr by three bytes
@@ -170,9 +178,9 @@ int main( int argc, char* argv[]){
 			{
 				strcat(hex,nexoperand);
 				locctr = (int) strtol(hex,NULL,0);
-				if(locctr >= 0x10000)//checks to see if addresss starts at 10000 in hex (1048576 in decimal) or higher; thus exceeding memmory limit
+				if(locctr >= 0x100000)//checks to see if addresss starts at 100000 in hex (1048576 in decimal) or higher; thus exceeding memmory limit
 				{
-					printf("ERROR: SIC program starts at Hex 10000 or higher(no room in memory) on line %d\n",linectr);
+					printf("ERROR: SIC program starts at Hex 100000 or higher(no room in memory) on line %d\n",linectr);
 					fclose(fp);
 					return 0;
 				}
@@ -274,16 +282,16 @@ int main( int argc, char* argv[]){
 		}
 	} //end of file read while
 	
-	/*while(SymIndex != index)//Prints out the symbol table 
+	while(SymIndex != index)//Prints out the symbol table 
 	{
 		printf("%s			%X\n",SymTab[SymIndex].Name, SymTab[SymIndex].Address);
 		SymIndex++;
 	}//end of SymTab print while
-	*/
+	
 	//end of Pass 1
 	
 	
-	
+	/*
 	//Start of Pass 2
 	locctr -= 3; //last inctruction/directive, END, shouldn't progress locctr
 	pLength = locctr - SymTab[0].Address;
@@ -662,6 +670,7 @@ int main( int argc, char* argv[]){
 			}
 		}
 	}//end of RecTab print while
+	*/
 	fclose(fp);
-	fclose(wp);
+	//fclose(wp);
 }//end of program
