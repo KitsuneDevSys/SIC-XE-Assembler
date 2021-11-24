@@ -50,7 +50,7 @@ int main( int argc, char* argv[]){
 
 	//New Variables for SICXE Assembler
 	char opcode[1024]; //Stores a copy of the opcode
-
+	char opcodesymbol[1024]; //Stores a copy of the opcode symbol (+#@)
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -99,6 +99,7 @@ int main( int argc, char* argv[]){
 		{
 			 int start=0;
 			 int next=0;
+			 //printf("BEFORE: %s \n",line);
 			 while(line[start] == 9 || line[start] == 32)
 			 {
 				if(start == 1024) //Executes if line is just a blank line
@@ -109,26 +110,51 @@ int main( int argc, char* argv[]){
 				}
 				start++;
 			 }
+			 //printf("%d\n",start);
 			 if(start != 0)
 			 {
 				 while(line[next + start] !='\0')
 				 {
 					 line[next] = line[next+start];
+					 //printf("DURING: %s \n",line);
 					 next++;
 				 }
+				 line[next]='\0'; //Adds New Null Terminating Character to remove/ignore repeating Opcode
 			 }
+			 //printf("AFTER: %s \n",line); //TEST
+			 //printf("TEST");//TEST
 			 path=1; //Used to split off program from s i/d o ; to i/d o
 		} //end of if
-		if (  (line[0] >= 65 ) && ( line[0] <= 90 )   ) 
+		//printf("%d Test\n", line[0]); //TEST
+		if (  ( (line[0] >= 65 ) && ( line[0] <= 90 ) ) || ((line[0] == 43  &&  path == 1) || (line[0] == 35 && path == 1) || (line[0] == 64 && path == 1) )  ) 
 	       	{
 			if(path==1) //If line doesnt have the symbol parameter
 			{
 			 nextoken = strtok(line, " \t\n");
 			 strcpy(opcode, nextoken); //copys Intruction into a seperate char array for extracting the symbol
+			 if( (line[0] == 43) || (line[0] == 35) || (line[0] == 64) )
+			 {
+				strncpy(opcodesymbol,line,1); //TEST
+			 }
+			 else
+			 {
+				 strcpy(opcodesymbol,"0"); //TEST
+			 }
 			 printf("The opcode stored is %s\n",opcode); //TEST
+			 holdsymbol = strtok_r(opcode, " +@#\t\n", &postfix); //removes +#@ from opcode
+			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
+			 strcpy(nextoken, opcode); //copys opcode into nextoken
+			 printf("%s is the opcode \n",opcode);
+			 printf("%s is the opcodesymbol extracted \n",opcodesymbol);
+
 
 			 nexoperand = strtok(NULL,"\t");
 			 strcpy(operand, nexoperand); //copys operand into a seperate char array
+			/*
+			 holdsymbol = strtok_r(operand, " ,\t\n", &postfix); //extracts symbol from operand
+			 strcpy(operandsymbol, holdsymbol); //stores the extracted symbol into the char array
+			 strcpy(operand, nexoperand); //copys operand into a seperate char array
+			*/
 			 locctr+=3; //increments the locctr by three bytes
 			}
 			else

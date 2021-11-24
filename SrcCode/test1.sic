@@ -1,7 +1,8 @@
 COPY    START   0
 FIRST   STL     RETADR
         LDB     #LENGTH
-        BASE    LENGTH
+#Changed BASE to LDB as BASE isnt an instruction nor a directive
+        +LDB     LENGTH
 CLOOP   +JSUB   RDREC
         LDA     LENGTH
         COMP    #0
