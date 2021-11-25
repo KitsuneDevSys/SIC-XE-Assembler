@@ -92,9 +92,9 @@ int main( int argc, char* argv[]){
 			}//end of if
 		if ( line[0] == 35) //Used to tell program to ignore comments
 	       	{  
-			linectr++;
-			continue;
-		}//end of if
+			    linectr++;
+			    continue;
+		    }//end of if
 		if( line[0] == 9 || line[0] == 32) //Used to remove leading whitespaces or horizontal tabs in front of SIC line and check for blank lines
 		{
 			 int start=0;
@@ -119,7 +119,8 @@ int main( int argc, char* argv[]){
 					 //printf("DURING: %s \n",line);
 					 next++;
 				 }
-				 line[next]='\0'; //Adds New Null Terminating Character to remove/ignore repeating Opcode
+				 line[next]='\r'; //Adds New carriage return to prevent program from overriding \r with the new \0 from the below line of code
+				 line[next+1]='\0'; //Adds New Null Terminating Character to remove/ignore repeating Opcode
 			 }
 			 //printf("AFTER: %s \n",line); //TEST
 			 //printf("TEST");//TEST
@@ -134,11 +135,11 @@ int main( int argc, char* argv[]){
 			 strcpy(opcode, nextoken); //copys Intruction into a seperate char array for extracting the symbol
 			 if( (line[0] == 43) || (line[0] == 35) || (line[0] == 64) )
 			 {
-				strncpy(opcodesymbol,line,1); //TEST
+				strncpy(opcodesymbol,line,1); //copies symbol (+@#) into opcode symbol
 			 }
 			 else
 			 {
-				 strcpy(opcodesymbol,"0"); //TEST
+				strcpy(opcodesymbol,"0"); //Places a 0 if their is no symbol present
 			 }
 			 printf("The opcode stored is %s\n",opcode); //TEST
 			 holdsymbol = strtok_r(opcode, " +@#\t\n", &postfix); //removes +#@ from opcode
@@ -155,7 +156,7 @@ int main( int argc, char* argv[]){
 			 strcpy(operandsymbol, holdsymbol); //stores the extracted symbol into the char array
 			 strcpy(operand, nexoperand); //copys operand into a seperate char array
 			*/
-			 locctr+=3; //increments the locctr by three bytes
+			 locctr+=3; //increments the locctr by three bytes NOTE: THIS WILL NEED TO BE CHANGED IN THE FUTURE AS NOT ALL SICXE INSTRUCTIONS ARE IN FORMAT 3
 			}
 			else
 			{
@@ -164,12 +165,13 @@ int main( int argc, char* argv[]){
 			nextoken = strtok( NULL, " \t\n");
 			nexoperand = strtok( NULL, "\t\n"); //CHANGED
 			strcpy(operand, nexoperand); //copys operand into a seperate char array
+			strcpy(opcode,nextoken);//copys opcode into a seperate char array
 			if( IsAValidSymbol(newsym) == 0 ) //Used to validate symbol names
 		       	{
 				printf("ERROR: INVALID SYMBOL on line %d\n",linectr);
 				fclose(fp);
 				return 0;
-			}
+			} //end if
 			if(index !=0) //doesnt check if this is the first symbol
 			{
 			while(SymTab[uniques].Name[1] != '\0') //used to check if symbol is already in the table
@@ -185,6 +187,20 @@ int main( int argc, char* argv[]){
 			}uniques=0; //restarts uniques
 			} //end of symbol duplication check
 			}//end of else-path
+			if( (path!=1) && ((nextoken[0] == 43) || (nextoken[0] == 35) || (nextoken[0] == 64)) ) //checks if their is a symbol (+@#) present within the opcode if their is a symbol defined 
+			{
+				strncpy(opcodesymbol,nextoken,1); //copies symbol (+@#) into opcode symbol
+			}
+			else if( (path!=1) && ((nextoken[0] != 43) && (nextoken[0] != 35) && (nextoken[0] != 64)) ) //executes if the above if is false
+			{
+				strcpy(opcodesymbol,"0"); //Places a 0 if their is no symbol present
+			} //end of else-if
+			if(path != 1) //removes symbol (+@#) from opcode and places it in nextoken if path isn't equal to 1
+			{
+				holdsymbol = strtok_r(opcode, " +@#\t\n", &postfix); //removes +#@ from opcode
+			    strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
+			    strcpy(nextoken, opcode); //copys opcode into nextoken
+			} //end if
 			if( (IsADirective(nextoken) != 1) ) //Used to validate instructions/directives
 		       	{
 				 if( (IsAnInstruction(nextoken) != 1) )
@@ -192,7 +208,7 @@ int main( int argc, char* argv[]){
 					printf("ERROR: Invalid DIRECTIVE or INSTRUCTION on line %d\n",linectr);
 					fclose(fp);
 					return 0;
-			       	 }
+			     }
 			} //end of instruction/directive check
 			if(((!(strcmp(nextoken, "START"))) != 1) && index==0) //Checks if the symbol table has the START Directive
 				{
@@ -307,7 +323,7 @@ int main( int argc, char* argv[]){
 			}
 		}
 	} //end of file read while
-	
+	printf("TESTING\n"); //TEST
 	while(SymIndex != index)//Prints out the symbol table 
 	{
 		printf("%s			%X\n",SymTab[SymIndex].Name, SymTab[SymIndex].Address);
