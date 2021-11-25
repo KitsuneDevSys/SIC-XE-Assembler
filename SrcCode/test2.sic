@@ -1,0 +1,5 @@
+COPY    START   0
+FIRST   STL     RETADR
+RETADR  RESW    1
+        RSUB
+        END     FIRST

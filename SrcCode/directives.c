@@ -11,7 +11,7 @@ return		( 	! (
 		 strcmp( Test, "RESR" )  &&
 		 strcmp( Test, "BYTE" )  &&
 		 strcmp( Test, "WORD" )  &&
-		 strcmp( Test, "EXPORTS" )   
-
+		 strcmp( Test, "EXPORTS" )  &&
+		 strcmp( Test, "BASE" )
 		 ) ) ;
 }

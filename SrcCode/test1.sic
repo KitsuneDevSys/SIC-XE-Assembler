@@ -1,8 +1,7 @@
 COPY    START   0
 FIRST   STL     RETADR
         LDB     #LENGTH
-#Changed BASE to LDB as BASE isnt an instruction nor a directive
-        +LDB     LENGTH
+        BASE     LENGTH
 CLOOP   +JSUB   RDREC
         LDA     LENGTH
         COMP    #0
@@ -42,6 +41,6 @@ WLOOP   TD      OUTPUT
         WD      OUTPUT
         TIXR    T
         JLT     WLOOP
-        RSUB
+        RSUB            
 OUTPUT  BYTE    X'O5'
         END     FIRST
