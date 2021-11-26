@@ -51,6 +51,8 @@ int main( int argc, char* argv[]){
 	//New Variables for SICXE Assembler
 	char opcode[1024]; //Stores a copy of the opcode
 	char opcodesymbol[1024]; //Stores a copy of the opcode symbol (+)
+	int formatD[1024]; //Stores the formats of the instructions.
+	int fiD = 0; //increments when each iteration of while loop is finished.
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -156,6 +158,8 @@ int main( int argc, char* argv[]){
 			 printf("The opcode stored is %s\n",opcode); //TEST
 			 holdsymbol = strtok_r(opcode, " +\t\n", &postfix); //removes + from opcode
 			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
+			 formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[fiD]); //stores the format number of each instruction into array.
+			 printf("Format: %d\n", formatD[fiD]);
 			 strcpy(nextoken, opcode); //copys opcode into nextoken
 			 printf("|%s| is the opcode \n",opcode); //TEST
 			 printf("|%s| is the opcodesymbol extracted \n",opcodesymbol); //TEST
@@ -186,7 +190,18 @@ int main( int argc, char* argv[]){
 			 {
 				locpath = 0;
 			 } //end of if BASE
-			 locctr+=3; //increments the locctr by three bytes NOTE: THIS WILL NEED TO BE CHANGED IN THE FUTURE AS NOT ALL SICXE INSTRUCTIONS ARE IN FORMAT 3
+			 else if(formatD[fiD] == 1) { // The four next else if's increment the locctr based on the format.
+				 locctr += 0x01;
+			 } 
+			 else if(formatD[fiD] == 2) { 
+				 locctr += 0x02;
+			 }
+			 else if(formatD[fiD] == 3) { 
+				 locctr += 0x03;
+			 } 
+			 else if(formatD[fiD] == 4) { 
+				 locctr += 0x04;
+			 } 
 			}
 			else
 			{
@@ -373,6 +388,7 @@ int main( int argc, char* argv[]){
 				return 0;
 			}
 		}
+		fiD++;
 	} //end of file read while
 	printf("TESTING\n"); //TEST
 	while(SymIndex != index)//Prints out the symbol table 
