@@ -158,7 +158,7 @@ int main( int argc, char* argv[]){
 			 printf("The opcode stored is %s\n",opcode); //TEST
 			 holdsymbol = strtok_r(opcode, " +\t\n", &postfix); //removes + from opcode
 			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
-			 formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[fiD]); //stores the format number of each instruction into array.
+			 formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
 			 printf("Format: %d\n", formatD[fiD]);
 			 strcpy(nextoken, opcode); //copys opcode into nextoken
 			 printf("|%s| is the opcode \n",opcode); //TEST
@@ -245,6 +245,7 @@ int main( int argc, char* argv[]){
 				holdsymbol = strtok_r(opcode, " +@#\t\n", &postfix); //removes +#@ from opcode
 			    strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
 			    strcpy(nextoken, opcode); //copys opcode into nextoken
+				formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
 			} //end if
 			if( (path!=1) && ( (nexoperand[0] == 35) || (nexoperand[0] == 64) ) ) //checks if their is a symbol (@#) present within the operand if their is a symbol defined
 			{
@@ -360,7 +361,23 @@ int main( int argc, char* argv[]){
 			if(locpath==1 && path!=1) //Insures specific dirrectives dont trigger this (i.e. START and BYTE) and path=1 path doesnt trigger this
 			{
 				SymTab[index].Address = locctr; //Stores Address in SymTab structure array
-				locctr+=3; //increments the locctr by three bytes
+				if(formatD[fiD] == 1) 
+				{ // The four next else if's increment the locctr based on the format.
+				 locctr += 0x01;
+			 	} 
+				else if(formatD[fiD] == 2) 
+				{ 
+				 locctr += 0x02;
+			 	}
+			 	else if(formatD[fiD] == 3) 
+				{ 
+				 locctr += 0x03;
+			 	} 
+			 	else if(formatD[fiD] == 4) 
+				{ 
+				 locctr += 0x04;
+			 	} 
+				//locctr+=3; //increments the locctr by three bytes NOTE THIS IS NO LONGER USED AS NOT ALL SICXE INSTRUCTIONS INCREMENT BY 3 BYTES
 			}
 			//printf("%X is the address stored in SymTab[%d]\n", SymTab[index].Address,index); //test
 			if(path !=1) //Insures path=1 path doesnt trigger this
@@ -390,7 +407,7 @@ int main( int argc, char* argv[]){
 		}
 		fiD++;
 	} //end of file read while
-	printf("TESTING\n"); //TEST
+	//printf("TESTING\n"); //TEST
 	while(SymIndex != index)//Prints out the symbol table 
 	{
 		printf("%s			%X\n",SymTab[SymIndex].Name, SymTab[SymIndex].Address);

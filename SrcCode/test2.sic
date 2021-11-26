@@ -1,5 +1,8 @@
 COPY    START   0
 FIRST   STL     RETADR
 RETADR  RESW    1
+        +LDT    #4096
+        +STA    FIRST
+TEST    +LDA    FIRST
         RSUB 
-        END     #FIRST
+ENDING  END     #FIRST
