@@ -42,5 +42,5 @@ WLOOP   TD      OUTPUT
         TIXR    T
         JLT     WLOOP
         RSUB            
-OUTPUT  BYTE    X'O5'
+OUTPUT  BYTE    X'05'
         END     FIRST

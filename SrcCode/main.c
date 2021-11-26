@@ -19,7 +19,7 @@ int main( int argc, char* argv[]){
 	
 	
 	char operand[1024]; //Stores a copy of the operand
-	char operandsymbol[1024]; //stores a copy of the operand with only the symbol
+	char operandsymbol[1024]; //stores a copy of the operand with only the symbol (, or #@)
 	char bwstring[1024]; //Stores a copy of the BYTE/WORD operand string
 	char fullline[1024]; //Stores a copy of the recent read line
 	char sName[7]; //Used to store a copy of a symbol name (TEST)
@@ -50,7 +50,7 @@ int main( int argc, char* argv[]){
 
 	//New Variables for SICXE Assembler
 	char opcode[1024]; //Stores a copy of the opcode
-	char opcodesymbol[1024]; //Stores a copy of the opcode symbol (+#@)
+	char opcodesymbol[1024]; //Stores a copy of the opcode symbol (+)
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -99,7 +99,7 @@ int main( int argc, char* argv[]){
 		{
 			 int start=0;
 			 int next=0;
-			 //printf("BEFORE: %s \n",line);
+			 //printf("BEFORE: |%s| \n",line);
 			 while(line[start] == 9 || line[start] == 32)
 			 {
 				if(start == 1024) //Executes if line is just a blank line
@@ -113,6 +113,7 @@ int main( int argc, char* argv[]){
 			 //printf("%d\n",start);
 			 if(start != 0)
 			 {
+				 /*
 				 while(line[next + start] !='\0')
 				 {
 					 line[next] = line[next+start];
@@ -120,42 +121,71 @@ int main( int argc, char* argv[]){
 					 next++;
 				 }
 				 line[next]='\r'; //Adds New carriage return to prevent program from overriding \r with the new \0 from the below line of code
-				 line[next+1]='\0'; //Adds New Null Terminating Character to remove/ignore repeating Opcode
+				 line[next+2]='\0'; //Adds New Null Terminating Character to remove/ignore repeating Opcode
+				 */
+				 //TESTING NEW CODE
+				 for(int current = start ; line[current] != '\0'; current++,next++)
+				 {
+					fullline[next] = line[current];
+				 }
+				 fullline[next] = '\0';
+				 //fullline[next +1] = '\r';
+				 strcpy(line,fullline);
 			 }
-			 //printf("AFTER: %s \n",line); //TEST
+			 //printf("AFTER: |%s| \n",line); //TEST
 			 //printf("TEST");//TEST
 			 path=1; //Used to split off program from s i/d o ; to i/d o
 		} //end of if
 		//printf("%d Test\n", line[0]); //TEST
-		if (  ( (line[0] >= 65 ) && ( line[0] <= 90 ) ) || ((line[0] == 43  &&  path == 1) || (line[0] == 35 && path == 1) || (line[0] == 64 && path == 1) )  ) 
+		if (  ( (line[0] >= 65 ) && ( line[0] <= 90 ) ) || ( (line[0] == 43  &&  path == 1)  )  ) 
 	       	{
 			if(path==1) //If line doesnt have the symbol parameter
 			{
 			 nextoken = strtok(line, " \t\n");
 			 strcpy(opcode, nextoken); //copys Intruction into a seperate char array for extracting the symbol
-			 if( (line[0] == 43) || (line[0] == 35) || (line[0] == 64) )
+			 nexoperand = strtok(NULL," 	\t");
+			 strcpy(operand, nexoperand); //copys operand into a seperate char array
+			 if( (line[0] == 43) )
 			 {
-				strncpy(opcodesymbol,line,1); //copies symbol (+@#) into opcode symbol
+				strncpy(opcodesymbol,line,1); //copies symbol (+) into opcodesymbol
 			 }
 			 else
 			 {
 				strcpy(opcodesymbol,"0"); //Places a 0 if their is no symbol present
 			 }
 			 printf("The opcode stored is %s\n",opcode); //TEST
-			 holdsymbol = strtok_r(opcode, " +@#\t\n", &postfix); //removes +#@ from opcode
+			 holdsymbol = strtok_r(opcode, " +\t\n", &postfix); //removes + from opcode
 			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
 			 strcpy(nextoken, opcode); //copys opcode into nextoken
-			 printf("%s is the opcode \n",opcode);
-			 printf("%s is the opcodesymbol extracted \n",opcodesymbol);
-
-
-			 nexoperand = strtok(NULL,"\t");
-			 strcpy(operand, nexoperand); //copys operand into a seperate char array
-			/*
-			 holdsymbol = strtok_r(operand, " ,\t\n", &postfix); //extracts symbol from operand
-			 strcpy(operandsymbol, holdsymbol); //stores the extracted symbol into the char array
-			 strcpy(operand, nexoperand); //copys operand into a seperate char array
-			*/
+			 printf("|%s| is the opcode \n",opcode); //TEST
+			 printf("|%s| is the opcodesymbol extracted \n",opcodesymbol); //TEST
+			 //printf("|%s| is the operand BEFORE \n",operand);
+			 //printf("|%c| is the operandsymbol BEFORE\n", nexoperand[0]); //TEST
+			 if( (nexoperand[0] == 35) || (nexoperand[0] == 64) )
+			 {
+				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
+			 }
+			 else
+			 {
+				strcpy(operandsymbol,"0"); //Places a 0 if their is no symbol present
+			 }
+			 //printf("The operand stored is |%s|\n",operand); //TEST
+			 holdsymbol = strtok(operand, " #@\t\n"); //extracts symbol from operand
+			 printf("The string stored in holdsymbol is |%s|\n",holdsymbol);
+			 if(holdsymbol != NULL)
+			 {
+		     	strcpy(operand, holdsymbol); //stores the extracted symbol into the char array
+			 	printf("|%s| is the operand \n",operand);
+			 	strcpy(nexoperand, operand); //copys operand into a seperate char array
+			 	//printf("%s is the operand \n",operand); //TEST
+			 	//printf("|%s| is the operandsymbol extracted \n",operandsymbol); //TEST
+			 }
+			printf("%s is the operand \n",operand);
+			printf("%s is the operandsymbol extracted \n",operandsymbol);
+			 if((!(strcmp(nextoken, "BASE"))) == 1) //Based on SCOFF document BASE doesn't increment locctr
+			 {
+				locpath = 0;
+			 } //end of if BASE
 			 locctr+=3; //increments the locctr by three bytes NOTE: THIS WILL NEED TO BE CHANGED IN THE FUTURE AS NOT ALL SICXE INSTRUCTIONS ARE IN FORMAT 3
 			}
 			else
@@ -187,20 +217,34 @@ int main( int argc, char* argv[]){
 			}uniques=0; //restarts uniques
 			} //end of symbol duplication check
 			}//end of else-path
-			if( (path!=1) && ((nextoken[0] == 43) || (nextoken[0] == 35) || (nextoken[0] == 64)) ) //checks if their is a symbol (+@#) present within the opcode if their is a symbol defined 
+			if( (path!=1) && ( (nextoken[0] == 43) ) ) //checks if their is a symbol (+) present within the opcode if their is a symbol defined 
 			{
-				strncpy(opcodesymbol,nextoken,1); //copies symbol (+@#) into opcode symbol
+				strncpy(opcodesymbol,nextoken,1); //copies symbol (+) into opcode symbol
 			}
-			else if( (path!=1) && ((nextoken[0] != 43) && (nextoken[0] != 35) && (nextoken[0] != 64)) ) //executes if the above if is false
+			else if( (path!=1) && ( (nextoken[0] != 43) ) ) //executes if the above if is false
 			{
 				strcpy(opcodesymbol,"0"); //Places a 0 if their is no symbol present
 			} //end of else-if
-			if(path != 1) //removes symbol (+@#) from opcode and places it in nextoken if path isn't equal to 1
+			if(path != 1) //removes symbol (+) from opcode and places it in nextoken if path isn't equal to 1
 			{
 				holdsymbol = strtok_r(opcode, " +@#\t\n", &postfix); //removes +#@ from opcode
 			    strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
 			    strcpy(nextoken, opcode); //copys opcode into nextoken
 			} //end if
+			if( (path!=1) && ( (nexoperand[0] == 35) || (nexoperand[0] == 64) ) ) //checks if their is a symbol (@#) present within the operand if their is a symbol defined
+			{
+				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
+			}
+			else if( (path!=1) && ( (nexoperand[0] != 35) && (nexoperand[0] != 64) ) ) //executes if the above if false
+			{
+				strcpy(operandsymbol,"0"); //Places a 0 if their is no symbol present
+			}
+			if(path != 1) //removes symbol (@#) from the operand and places it in the nexoperand if path isn't equal to 1
+			{
+				holdsymbol = strtok_r(operand, " #@\t\n", &postfix); //extracts symbol from operand
+			 	strcpy(operand, holdsymbol); //stores the modified operand into the char array
+			 	strcpy(nexoperand, operand); //copys operand into a seperate char array
+			}
 			if( (IsADirective(nextoken) != 1) ) //Used to validate instructions/directives
 		       	{
 				 if( (IsAnInstruction(nextoken) != 1) )
@@ -244,6 +288,7 @@ int main( int argc, char* argv[]){
 				char* Bw;
 				prefix = strtok(operand, "'");
 				Bw = strtok(NULL,"'");
+				//printf("|%s| is the string stored in bw \n",Bw); //TEST
 				if((!(strcmp(prefix, "C"))) == 1)
 				{
 					SymTab[index].Address = locctr; //Stores Address in SymTab structure array
@@ -253,8 +298,10 @@ int main( int argc, char* argv[]){
 				else if((!(strcmp(prefix, "X"))) == 1)
 				{
 					strcpy(bwstring,Bw);
+					//printf("|%s| is the string stored in bw \n",bwstring); //TEST
 					for(int cindex=0;bwstring[cindex]!='\0';cindex++) //Checks to see if the string in an X' is a valid hex
 					{
+							//printf("|%d| \n",isxdigit(bwstring[cindex]));
 							if(isxdigit(bwstring[cindex]) ==0) //Executes if a character in the string isnt a valid hex
 							{
 								hexc=0;
@@ -289,6 +336,10 @@ int main( int argc, char* argv[]){
 				locctr += Bn; //accounds the number of bytes for memory storage by incrementing locctr to the given operand decimal number
 				locpath = 0;
 			} //end of else-if RESB
+			else if((!(strcmp(nextoken, "BASE"))) == 1) //Based on SCOFF document BASE doesn't increment locctr
+			{
+				locpath = 0;
+			} //end of else-if BASE
 			strcpy(SymTab[index].Name, symbolname); //Stores symbol in SymTab structure array
 			SymTab[index].DefinedOnSourceLine = linectr; //Stores source line in SymTab structure array
 			if(locpath==1 && path!=1) //Insures specific dirrectives dont trigger this (i.e. START and BYTE) and path=1 path doesnt trigger this
