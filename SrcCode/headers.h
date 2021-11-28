@@ -41,5 +41,6 @@ int IsAValidSymbol( char *TestSymbol );
 int IsADirective( char *Test );
 int IsAnInstruction( char *Test);
 int InstructionToOpcode(char *Test);
-int IsAValidRegister( char *Test );
+int RegisterValue( char *Test );
+int IsAnRegister(char* Test);
 int FormatSpecifier(char *instructs, char opSymb);

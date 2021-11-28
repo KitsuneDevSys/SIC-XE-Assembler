@@ -27,7 +27,7 @@ int IsAValidSymbol( char *TestSymbol ){
 		index++;
 		
 	}
-	if(IsADirective(TestSymbol) == 1 || IsAnInstruction(TestSymbol) ==1)
+	if(IsADirective(TestSymbol) == 1 || IsAnInstruction(TestSymbol) == 1 || IsAnRegister(TestSymbol) == 1)
 	{
 		Result = 0;
 	}

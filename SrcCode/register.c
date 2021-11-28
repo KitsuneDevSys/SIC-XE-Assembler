@@ -1,6 +1,6 @@
 #include "headers.h"
 
-int IsAValidRegister( char *Test )
+int RegisterValue( char *Test )
 {
     int registervalue = NULL; //Will return an invalid registervalue if the register was invalid
     if((!(strcmp(Test,"A"))) == 1)
@@ -36,4 +36,18 @@ int IsAValidRegister( char *Test )
 		registervalue = 0x90;
 	}
     return registervalue;
+}
+
+int IsAnRegister(char* Test)
+{
+	return		( 	! ( 
+		 strcmp( Test, "A" )  &&
+		 strcmp( Test, "X" ) &&
+	     strcmp( Test, "B" ) &&	 
+		 strcmp( Test, "S" ) &&
+		 strcmp( Test, "T" ) &&
+		 strcmp( Test, "F" ) &&
+		 strcmp( Test, "PC" ) &&
+		 strcmp( Test, "SW" )
+		) ) ;
 }
