@@ -9,31 +9,31 @@ int RegisterValue( char *Test )
 	}
 	else if((!(strcmp(Test,"X"))) == 1)
 	{
-		registervalue = 0x10;
+		registervalue = 0x01;
 	}
     else if((!(strcmp(Test,"B"))) == 1)
 	{
-		registervalue = 0x30;
+		registervalue = 0x03;
 	}
     else if((!(strcmp(Test,"S"))) == 1)
 	{
-		registervalue = 0x40;
+		registervalue = 0x04;
 	}
     else if((!(strcmp(Test,"T"))) == 1)
 	{
-		registervalue = 0x50;
+		registervalue = 0x05;
 	}
     else if((!(strcmp(Test,"F"))) == 1)
 	{
-		registervalue = 0x60;
+		registervalue = 0x06;
 	}
     else if((!(strcmp(Test,"PC"))) == 1)
 	{
-		registervalue = 0x80;
+		registervalue = 0x08;
 	}
     else if((!(strcmp(Test,"SW"))) == 1)
 	{
-		registervalue = 0x90;
+		registervalue = 0x09;
 	}
     return registervalue;
 }
