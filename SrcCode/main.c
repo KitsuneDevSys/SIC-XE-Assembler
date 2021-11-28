@@ -528,6 +528,7 @@ int main( int argc, char* argv[]){
 				strcpy(operandsymboltwo, holdoperand); //stores the extracted symbol into the char array
 			    strcpy(operand, nexoperand); //copys operand into a seperate char array
 			 }
+			 //NEEDS TO BE MODIFIED FOR SICXE
 			 strcpy(RecTab[rindex].RecordType,"T"); //Sets the record type to a text
 			 RecTab[rindex].Address = locctr; //Puts the adress from the locctr into the RecTab
 			 RecTab[rindex].Length = 0x03; //Stores the length of a SIC instruction (3 bytes) into the RecTab
@@ -817,7 +818,7 @@ int main( int argc, char* argv[]){
 				EAddress = locctr; //stores the locctr in End Address to be stored in the E Record
 				FirstSICInstruction=0;
 			}
-			if(trecpath==1) //Creates t-records for lines with a symbol defined
+			if(trecpath==1) //Creates t-records for lines with a symbol defined (NEEDS TO BE MODIFIED FOR SICXE)
 			{
 				strcpy(RecTab[rindex].RecordType,"T"); //Sets the record type to a text
 				while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the defined symbol from the SymTab
