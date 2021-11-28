@@ -19,7 +19,7 @@ int main( int argc, char* argv[]){
 	
 	
 	char operand[1024]; //Stores a copy of the operand
-	char operandsymbol[1024]; //stores a copy of the operand with only the symbol (, or #@)
+	char operandsymbol[1024]; //stores a copy of the operand with only the symbol (#@)
 	char bwstring[1024]; //Stores a copy of the BYTE/WORD operand string
 	char fullline[1024]; //Stores a copy of the recent read line
 	char sName[7]; //Used to store a copy of a symbol name (TEST)
@@ -51,8 +51,10 @@ int main( int argc, char* argv[]){
 	//New Variables for SICXE Assembler
 	char opcode[1024]; //Stores a copy of the opcode
 	char opcodesymbol[1024]; //Stores a copy of the opcode symbol (+)
+	char operandsymboltwo[1024]; //stores a copy of the operand with only the symbol (,)
 	int formatD[1024]; //Stores the formats of the instructions.
 	int fiD = 0; //increments when each iteration of while loop is finished.
+	char* holdoperand;
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -416,8 +418,6 @@ int main( int argc, char* argv[]){
 	
 	//end of Pass 1
 	
-	
-	/*
 	//Start of Pass 2
 	locctr -= 3; //last inctruction/directive, END, shouldn't progress locctr
 	pLength = locctr - SymTab[0].Address;
@@ -446,23 +446,68 @@ int main( int argc, char* argv[]){
 			 }
 			 if(start != 0)
 			 {
+				 /*
 				 while(line[next + start] !='\0')
 				 {
 					 line[next] = line[next+start];
+					 //printf("DURING: %s \n",line);
 					 next++;
 				 }
+				 line[next]='\r'; //Adds New carriage return to prevent program from overriding \r with the new \0 from the below line of code
+				 line[next+2]='\0'; //Adds New Null Terminating Character to remove/ignore repeating Opcode
+				 */
+				 //TESTING NEW CODE
+				 for(int current = start ; line[current] != '\0'; current++,next++)
+				 {
+					fullline[next] = line[current];
+				 }
+				 fullline[next] = '\0';
+				 //fullline[next +1] = '\r';
+				 strcpy(line,fullline);
 			 }
 			 path=1; //Used to split off program from s i/d o ; to i/d o
 		} //end of if
-		if (  (line[0] >= 65 ) && ( line[0] <= 90 )   ) 
+		if (  ( (line[0] >= 65 ) && ( line[0] <= 90 ) ) || ( (line[0] == 43  &&  path == 1)  )   ) 
 	       	{
 			if(path==1) //If line doesnt have the symbol parameter
 			{
+			 //NEW CODE STARTS HERE
 			 nextoken = strtok(line, " \t\n");
+			 strcpy(opcode, nextoken); //copys Intruction into a seperate char array for extracting the symbol
 			 nexoperand = strtok(NULL," \t\n");
 			 strcpy(operand, nexoperand); //copys operand into a seperate char array for extracting the symbol
-			 holdsymbol = strtok_r(operand, " ,\t\n", &postfix); //extracts symbol from operand
-			 strcpy(operandsymbol, holdsymbol); //stores the extracted symbol into the char array
+		     if( (line[0] == 43) )
+			 {
+				strncpy(opcodesymbol,line,1); //copies symbol (+) into opcodesymbol
+			 }
+			 else
+			 {
+				strcpy(opcodesymbol,"0"); //Places a 0 if their is no symbol present
+			 }
+			 holdsymbol = strtok_r(opcode, " +\t\n", &postfix); //removes + from opcode
+			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
+			 formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
+			 strcpy(nextoken, opcode); //copys opcode into nextoken
+			 if( (nexoperand[0] == 35) || (nexoperand[0] == 64) )
+			 {
+				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
+			 }
+			 else
+			 {
+				strcpy(operandsymbol,"0"); //Places a 0 if their is no symbol present
+			 }
+			 holdsymbol = strtok(operand, " #@\t\n"); //extracts symbol from operand
+			 if(holdsymbol != NULL)
+			 {
+		     	strcpy(operand, holdsymbol); //stores the extracted symbol into the char array
+			 	//printf("|%s| is the operand \n",operand);
+			 	strcpy(nexoperand, operand); //copys operand into a seperate char array
+			 	//printf("%s is the operand \n",operand); //TEST
+			 	//printf("|%s| is the operandsymbol extracted \n",operandsymbol); //TEST
+			 }
+			 //NEW CODE ENDS HERE
+			 holdoperand = strtok_r(operand, " ,\t\n", &postfix); //extracts symbol from operand
+			 strcpy(operandsymboltwo, holdoperand); //stores the extracted symbol into the char array
 			 strcpy(operand, nexoperand); //copys operand into a seperate char array
 			 strcpy(RecTab[rindex].RecordType,"T"); //Sets the record type to a text
 			 RecTab[rindex].Address = locctr; //Puts the adress from the locctr into the RecTab
@@ -471,7 +516,7 @@ int main( int argc, char* argv[]){
 			 while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
 			    {
 				  strcpy(sName, SymTab[uniques].Name);
-				  if(strcmp(sName, operandsymbol) == 0)
+				  if(strcmp(sName, operandsymboltwo) == 0)
 				  {
 					 RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
 					  if((!(strcmp(postfix, "X"))) == 1) //Used to prevent RSUB from creating Modification Records
@@ -485,8 +530,14 @@ int main( int argc, char* argv[]){
 			 rindex++; //increments rindex to next position for modification record
 			 if((!(strcmp(nextoken, "RSUB"))) == 1) //Used to prevent RSUB from creating Modification Records
 			 {
-				 mrecpath=0;
+				mrecpath=0;
 			 }
+			 //NEW IF STATEMENT
+			 if((!(strcmp(nextoken, "BASE"))) == 1) //Based on SCOFF document BASE doesn't increment locctr
+			 {
+				locpath = 0;
+				mrecpath= 0;
+			 } //end of if BASE
 			 if(mrecpath ==1) //Used to Prevent RSUB Modification Records Exclusively
 			 {
 			 strcpy(RecTab[rindex].RecordType,"M");
@@ -498,7 +549,20 @@ int main( int argc, char* argv[]){
 			 mrecpath=0; //Used to prevent the creation of duplicate Modification Records
 			 trecpath=0; //Used to prevent the creation of duplicate Text Records
 			 rindex++; //increments rindex to next position for next valid record
-			 locctr+=3; //increments the locctr by three bytes
+			 //NEW LOCCTR
+			 if(formatD[fiD] == 1) { // The four next else if's increment the locctr based on the format.
+				 locctr += 0x01;
+			 } 
+			 else if(formatD[fiD] == 2) { 
+				 locctr += 0x02;
+			 }
+			 else if(formatD[fiD] == 3) { 
+				 locctr += 0x03;
+			 } 
+			 else if(formatD[fiD] == 4) { 
+				 locctr += 0x04;
+			 } 
+			 //locctr+=3; //increments the locctr by three bytes
 			}
 			else
 			{
@@ -507,16 +571,46 @@ int main( int argc, char* argv[]){
 			nextoken = strtok( NULL, " \t\n");
 			nexoperand = strtok( NULL, "\t\n");
 			strcpy(operand, nexoperand); //copys operand into a seperate char array for extracting the symbol
-			holdsymbol = strtok(operand, " ,\t\n"); //extracts symbol from operand
-			strcpy(operandsymbol, holdsymbol); //stores the extracted symbol into the char array
+			strcpy(opcode,nextoken);//copys opcode into a seperate char array
+			holdoperand = strtok(operand, " ,@#\t\n"); //extracts symbol from operand
+			strcpy(operandsymboltwo, holdoperand); //stores the extracted symbol into the char array
 			strcpy(operand, nexoperand); //copys operand into a seperate char array
+			if( (nexoperand[0] == 35) || (nexoperand[0] == 64) )
+			{
+				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
+			}
+			 else
+			{
+				strcpy(operandsymbol,"0"); //Places a 0 if their is no symbol present
+			}
+			holdsymbol = strtok(operand, " #@\t\n"); //extracts symbol from operand
+			if(holdsymbol != NULL)
+			 {
+		     	strcpy(operand, holdsymbol); //stores the extracted symbol into the char array
+			 	strcpy(nexoperand, operand); //copys operand into a seperate char array
+			 }
 			}//end of else-path
-			if( IsAValidSymbol(operandsymbol) != 0 ) //Used to check if operands that are symbols are within the symbol table
+			if( (path!=1) && ( (nextoken[0] == 43) ) ) //checks if their is a symbol (+) present within the opcode if their is a symbol defined 
+			{
+				strncpy(opcodesymbol,nextoken,1); //copies symbol (+) into opcode symbol
+			}
+			else if( (path!=1) && ( (nextoken[0] != 43) ) ) //executes if the above if is false
+			{
+				strcpy(opcodesymbol,"0"); //Places a 0 if their is no symbol present
+			} //end of else-if
+			if(path != 1) //removes symbol (+) from opcode and places it in nextoken if path isn't equal to 1
+			{
+				holdsymbol = strtok_r(opcode, " +@#\t\n", &postfix); //removes +#@ from opcode
+			    strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
+			    strcpy(nextoken, opcode); //copys opcode into nextoken
+				formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
+			} //end if
+			if( IsAValidSymbol(operandsymboltwo) != 0 ) //Used to check if operands that are symbols are within the symbol table
 		    {
 			   while(SymTab[uniques].Name[1] != '\0') //used to check if symbol is in table
 			    {
 				  strcpy(sName, SymTab[uniques].Name);
-				  if(strcmp(sName, operandsymbol) == 0)
+				  if(strcmp(sName, operandsymboltwo) == 0)
 				  {
 					 oSymbol=1;
 					 break;
@@ -677,6 +771,10 @@ int main( int argc, char* argv[]){
 				mrecpath=0;
 				rindex++;
 			}//end of else-if END
+			else if((!(strcmp(nextoken, "BASE"))) == 1) //Based on SCOFF document BASE doesn't increment locctr
+			{
+				locpath = 0;
+			} //end of else-if BASE
 			else if(FirstSICInstruction==1) //If the nextoken is the first SIC Instruction, this will execute
 			{
 				EAddress = locctr; //stores the locctr in End Address to be stored in the E Record
@@ -721,7 +819,23 @@ int main( int argc, char* argv[]){
 			}
 			if(locpath==1 && path!=1) //Insures specific dirrectives dont trigger this (i.e. START and BYTE) and path=1 path doesnt trigger this
 			{
-				locctr+=3; //increments the locctr by three bytes
+				if(formatD[fiD] == 1) 
+				{ // The four next else if's increment the locctr based on the format.
+				 locctr += 0x01;
+			 	} 
+				else if(formatD[fiD] == 2) 
+				{ 
+				 locctr += 0x02;
+			 	}
+			 	else if(formatD[fiD] == 3) 
+				{ 
+				 locctr += 0x03;
+			 	} 
+			 	else if(formatD[fiD] == 4) 
+				{ 
+				 locctr += 0x04;
+			 	} 
+				//locctr+=3; //increments the locctr by three bytes
 			}
 			if(path !=1) //Insures path=1 path doesnt trigger this
 			{
@@ -735,6 +849,7 @@ int main( int argc, char* argv[]){
 			linectr++;
 			continue;
 		}//end of if 
+		fiD++;
 	} //end of second file read while
 	//Where I will open the obj file and start writing the RecTab to it
 	wp = fopen( fname, "w"); //Creates the Object file to write the RecTab's contents.
@@ -796,7 +911,6 @@ int main( int argc, char* argv[]){
 			}
 		}
 	}//end of RecTab print while
-	*/
 	fclose(fp);
-	//fclose(wp);
+	fclose(wp);
 }//end of program
