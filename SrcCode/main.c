@@ -531,7 +531,7 @@ int main( int argc, char* argv[]){
 			 //NEEDS TO BE MODIFIED FOR SICXE
 			 strcpy(RecTab[rindex].RecordType,"T"); //Sets the record type to a text
 			 RecTab[rindex].Address = locctr; //Puts the adress from the locctr into the RecTab
-			 RecTab[rindex].Length = 0x03; //Stores the length of a SIC instruction (3 bytes) into the RecTab
+			 //RecTab[rindex].Length = 0x03; //Stores the length of a SIC instruction (3 bytes) into the RecTab
 			 RecTab[rindex].opcode = InstructionToOpcode(nextoken); //Stores the opcode value of the instruction into the RecTab (but not the address)
 			 //printf("Before While loop within Pass 1\n");
 			 while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
@@ -554,15 +554,24 @@ int main( int argc, char* argv[]){
 
 				//Create T records based on the format of the instruction
 				if(formatD[fiD] == 1) {
-					strcpy(RecTab[rindex].RecordType,"T");
-					RecTab[rindex].Address = locctr;
 					RecTab[rindex].Length = 0x01;
-					RecTab[rindex].opcode = InstructionToOpcode(nextoken);
 				} else if(formatD[fiD] == 2) {
-
+					RecTab[rindex].Length = 0x02;
+					//printf("%s\n", nexoperand);
+					if((RecTab[rindex].opcode != 0xB4) && (RecTab[rindex].opcode != 0xB0) && (RecTab[rindex].opcode != 0xB8)) {
+						//printf("%s\n", operand);
+						nexoperand = strtok(operand, ",");
+						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
+						nexoperand = strtok(NULL, ",");
+						RecTab[rindex].regAddress2 = RegisterValue(nexoperand);
+					}
+					else {
+						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
+					}
 				} else if(formatD[fiD] == 3) {
 				
 				} else if(formatD[fiD] == 4) {
+					
 				
 				} else {
 				

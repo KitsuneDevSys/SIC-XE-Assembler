@@ -33,6 +33,8 @@ struct records
 	char SymbolMod[7];
 	char ByteOpcode[70];
 	int ByteRecord;
+	int regAddress1;
+	int regAddress2;
 };
 
 typedef struct records RECORDS;
