@@ -551,6 +551,22 @@ int main( int argc, char* argv[]){
 				  }
 				 uniques++;
 			    }
+
+				//Create T records based on the format of the instruction
+				if(FormatD.fiD == 1) {
+					strcpy(RecTab[rindex].RecordType,"T");
+					RecTab[rindex].Address = locctr;
+					RecTab[rindex].Length = 0x01;
+					RecTab[rindex].opcode = InstructionToOpcode(nextoken);
+				} else if(FormatD.fiD == 2) {
+
+				} else if(FormatD.fiD == 3) {
+				
+				} else if(FormatD.fiD == 4) {
+				
+				} else {
+				
+				}
 			 uniques=0; //restarts uniques
 			 rindex++; //increments rindex to next position for modification record
 			 //printf("Before String compare within pass == 1 \n");
