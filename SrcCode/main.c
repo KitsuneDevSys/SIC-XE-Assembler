@@ -836,7 +836,7 @@ int main( int argc, char* argv[]){
 				while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
 			    {
 				  strcpy(sName, SymTab[uniques].Name);
-				  if(strcmp(sName, operandsymbol) == 0) //NEED TO TAKE INTO ACCOUNT THE X ADDRESSES FOR SYMBOL,X
+				  if(strcmp(sName, operandsymboltwo) == 0) //NEED TO TAKE INTO ACCOUNT THE X ADDRESSES FOR SYMBOL,X
 				  {
 					 RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
 					 break;
