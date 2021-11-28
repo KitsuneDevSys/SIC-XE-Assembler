@@ -12,7 +12,7 @@ ENDFIL  LDA     EOF
         STA     BUFFER
         LDA     #3
         STA     LENGTH
-        +JSUB   WWREC
+        +JSUB   WRREC
         J       @RETADR
 EOF     BYTE    C'EOF'
 RETADR  RESW    1

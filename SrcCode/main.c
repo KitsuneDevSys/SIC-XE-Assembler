@@ -55,6 +55,7 @@ int main( int argc, char* argv[]){
 	int formatD[1024]; //Stores the formats of the instructions.
 	int fiD = 0; //increments when each iteration of while loop is finished.
 	char* holdoperand;
+	char postfixstring[1024]; //test
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -427,10 +428,13 @@ int main( int argc, char* argv[]){
 	linectr = 1; //resets linectr to 1
 	index = 0; //resets index to 0
 	path=0; //resets path to 0
+	fiD=0;
 	strcpy(hex,"0x"); //resets hex to 0x
+	//printf("1 HELLO WORLD\n");
 	while(  fgets( line , 1024 , fp ) != NULL ) //Reads through the file again, Pass 2, to write out the object code. Removed all Pass 1 error checks and SymTab table insertion in this loop, because this was done in Pass 1
        	{
 		strcpy( fullline, line );
+		//printf("2 HELLO WORLD\n");
 		if ( line[0] == 35) //Used to tell program to ignore comments
 	       	{  
 				linectr++;
@@ -472,10 +476,12 @@ int main( int argc, char* argv[]){
 			if(path==1) //If line doesnt have the symbol parameter
 			{
 			 //NEW CODE STARTS HERE
+			 //printf("Within pass == 1\n");
 			 nextoken = strtok(line, " \t\n");
 			 strcpy(opcode, nextoken); //copys Intruction into a seperate char array for extracting the symbol
-			 nexoperand = strtok(NULL," \t\n");
+			 nexoperand = strtok(NULL," 	\t");
 			 strcpy(operand, nexoperand); //copys operand into a seperate char array for extracting the symbol
+			 //printf("HELP\n");
 		     if( (line[0] == 43) )
 			 {
 				strncpy(opcodesymbol,line,1); //copies symbol (+) into opcodesymbol
@@ -488,6 +494,7 @@ int main( int argc, char* argv[]){
 			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
 			 formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
 			 strcpy(nextoken, opcode); //copys opcode into nextoken
+			 //printf("Testing 2 within pass=1 new code\n");
 			 if( (nexoperand[0] == 35) || (nexoperand[0] == 64) )
 			 {
 				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
@@ -496,6 +503,7 @@ int main( int argc, char* argv[]){
 			 {
 				strcpy(operandsymbol,"0"); //Places a 0 if their is no symbol present
 			 }
+			 //printf("TESTING 1 after new code in path == 1 part 1\n");
 			 holdsymbol = strtok(operand, " #@\t\n"); //extracts symbol from operand
 			 if(holdsymbol != NULL)
 			 {
@@ -506,28 +514,45 @@ int main( int argc, char* argv[]){
 			 	//printf("|%s| is the operandsymbol extracted \n",operandsymbol); //TEST
 			 }
 			 //NEW CODE ENDS HERE
+			 //printf("TESTING 1 after new code in path == 1 part 2\n");
 			 holdoperand = strtok_r(operand, " ,\t\n", &postfix); //extracts symbol from operand
-			 strcpy(operandsymboltwo, holdoperand); //stores the extracted symbol into the char array
-			 strcpy(operand, nexoperand); //copys operand into a seperate char array
+			 //printf("%s is stored in postfix\n",postfix); //test
+			 //printf("%s is stored in holdoperand\n",holdoperand);
+			 if(postfix!=NULL)
+			 {
+				strcpy(postfixstring,postfix); //test
+			 }
+			 //printf("After if statement in pass 1\n"); 
+			 if(holdoperand != NULL)
+			 {
+				strcpy(operandsymboltwo, holdoperand); //stores the extracted symbol into the char array
+			    strcpy(operand, nexoperand); //copys operand into a seperate char array
+			 }
 			 strcpy(RecTab[rindex].RecordType,"T"); //Sets the record type to a text
 			 RecTab[rindex].Address = locctr; //Puts the adress from the locctr into the RecTab
 			 RecTab[rindex].Length = 0x03; //Stores the length of a SIC instruction (3 bytes) into the RecTab
 			 RecTab[rindex].opcode = InstructionToOpcode(nextoken); //Stores the opcode value of the instruction into the RecTab (but not the address)
+			 //printf("Before While loop within Pass 1\n");
 			 while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
 			    {
+				  //printf("HELLO WORLD\n"); //test
 				  strcpy(sName, SymTab[uniques].Name);
+				  //printf("HEY YOU!!\n");
 				  if(strcmp(sName, operandsymboltwo) == 0)
 				  {
-					 RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
-					  if((!(strcmp(postfix, "X"))) == 1) //Used to prevent RSUB from creating Modification Records
+					  RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
+					  if((!(strcmp(postfixstring, "X"))) == 1) //Used to prevent RSUB from creating Modification Records
 						{
-							 RecTab[rindex].opaddress += 0x10000; //Offsets opaddress by 10000 if an X postfix is present in the operand
+							RecTab[rindex].opaddress += 0x10000; //Offsets opaddress by 10000 if an X postfix is present in the operand
 						}
-					 break;
+					    break;
+					 
 				  }
 				 uniques++;
-			    }uniques=0; //restarts uniques
+			    }
+			 uniques=0; //restarts uniques
 			 rindex++; //increments rindex to next position for modification record
+			 //printf("Before String compare within pass == 1 \n");
 			 if((!(strcmp(nextoken, "RSUB"))) == 1) //Used to prevent RSUB from creating Modification Records
 			 {
 				mrecpath=0;
@@ -550,19 +575,25 @@ int main( int argc, char* argv[]){
 			 trecpath=0; //Used to prevent the creation of duplicate Text Records
 			 rindex++; //increments rindex to next position for next valid record
 			 //NEW LOCCTR
-			 if(formatD[fiD] == 1) { // The four next else if's increment the locctr based on the format.
+			 //printf("TESTING 4\n");
+			 if(formatD[fiD] == 1) 
+			 { // The four next else if's increment the locctr based on the format.
 				 locctr += 0x01;
 			 } 
-			 else if(formatD[fiD] == 2) { 
+			 else if(formatD[fiD] == 2) 
+			 { 
 				 locctr += 0x02;
 			 }
-			 else if(formatD[fiD] == 3) { 
+			 else if(formatD[fiD] == 3) 
+			 { 
 				 locctr += 0x03;
 			 } 
-			 else if(formatD[fiD] == 4) { 
+			 else if(formatD[fiD] == 4) 
+			 { 
 				 locctr += 0x04;
 			 } 
 			 //locctr+=3; //increments the locctr by three bytes
+			 //printf("END OF PATH == 1\n"); //test
 			}
 			else
 			{
@@ -572,9 +603,12 @@ int main( int argc, char* argv[]){
 			nexoperand = strtok( NULL, "\t\n");
 			strcpy(operand, nexoperand); //copys operand into a seperate char array for extracting the symbol
 			strcpy(opcode,nextoken);//copys opcode into a seperate char array
+			//printf("BEFORE HOLDOPERAND\n");
 			holdoperand = strtok(operand, " ,@#\t\n"); //extracts symbol from operand
+			//printf("%s is the string in holdoperand\n",holdoperand);
 			strcpy(operandsymboltwo, holdoperand); //stores the extracted symbol into the char array
 			strcpy(operand, nexoperand); //copys operand into a seperate char array
+			//printf("%s is the string in operandsymboltwo\n",operandsymboltwo); //test
 			if( (nexoperand[0] == 35) || (nexoperand[0] == 64) )
 			{
 				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
@@ -590,6 +624,7 @@ int main( int argc, char* argv[]){
 			 	strcpy(nexoperand, operand); //copys operand into a seperate char array
 			 }
 			}//end of else-path
+			//printf("TESTING 3\n");
 			if( (path!=1) && ( (nextoken[0] == 43) ) ) //checks if their is a symbol (+) present within the opcode if their is a symbol defined 
 			{
 				strncpy(opcodesymbol,nextoken,1); //copies symbol (+) into opcode symbol
@@ -605,11 +640,13 @@ int main( int argc, char* argv[]){
 			    strcpy(nextoken, opcode); //copys opcode into nextoken
 				formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
 			} //end if
+			//printf("|%s| is the string stored in operandtwo\n",operandsymboltwo);
 			if( IsAValidSymbol(operandsymboltwo) != 0 ) //Used to check if operands that are symbols are within the symbol table
 		    {
 			   while(SymTab[uniques].Name[1] != '\0') //used to check if symbol is in table
 			    {
 				  strcpy(sName, SymTab[uniques].Name);
+				  //printf("|%s| is the string stored within SymTab.Name\n",sName);
 				  if(strcmp(sName, operandsymboltwo) == 0)
 				  {
 					 oSymbol=1;
@@ -618,7 +655,7 @@ int main( int argc, char* argv[]){
 				 uniques++;
 			    }uniques=0; //restarts uniques
 			}
-			else if(IsAValidSymbol(operand) == 0) //Executes if operand doesn't contain a symbol
+			else if(IsAValidSymbol(operand) == 0) //Executes if operand doesn't contain a symbol or is a register (to be added soon)
 			{
 				oSymbol=1;
 			}
@@ -850,8 +887,10 @@ int main( int argc, char* argv[]){
 			continue;
 		}//end of if 
 		fiD++;
+		//printf("%d is the line\n",linectr); //TEST
 	} //end of second file read while
 	//Where I will open the obj file and start writing the RecTab to it
+	//printf("END HELLO WORLD\n");
 	wp = fopen( fname, "w"); //Creates the Object file to write the RecTab's contents.
 	if(wp == NULL) //Checks if file is able to be opened
 	{
@@ -860,7 +899,7 @@ int main( int argc, char* argv[]){
 		fclose(wp);
 		return 0;
 	}
-	
+	//printf("HELLO WORLD\n");
 	
 	//Writing the RecTab into the .obj file in order of Header, Text, Modification, and End Record
 	while(RecIndex != rindex && RecordOrder < 5)//Prints out the RecTab table for testing purposes 
