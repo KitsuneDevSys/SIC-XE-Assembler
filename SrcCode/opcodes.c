@@ -107,6 +107,142 @@ int InstructionToOpcode(char *Test)
 	{
 		opcode = 0xDC;
 	}
+	else if((!(strcmp(Test,"ADDF"))) == 1) //XE instruction opcodes
+	{
+		opcode = 0x58;
+	}
+	else if((!(strcmp(Test,"ADDR"))) == 1)
+	{
+		opcode = 0x90;
+	}
+	else if((!(strcmp(Test,"CLEAR"))) == 1)
+	{
+		opcode = 0xB4;
+	}
+	else if((!(strcmp(Test,"COMPF"))) == 1)
+	{
+		opcode = 0x88;
+	}
+	else if((!(strcmp(Test,"COMPR"))) == 1)
+	{
+		opcode = 0xA0;
+	}
+	else if((!(strcmp(Test,"DIVF"))) == 1)
+	{
+		opcode = 0x64;
+	}
+	else if((!(strcmp(Test,"DIVR"))) == 1)
+	{
+		opcode = 0x9C;
+	}
+	else if((!(strcmp(Test,"FIX"))) == 1)
+	{
+		opcode = 0xC4;
+	}
+	else if((!(strcmp(Test,"FLOAT"))) == 1)
+	{
+		opcode = 0xC0;
+	}
+	else if((!(strcmp(Test,"HIO"))) == 1)
+	{
+		opcode = 0xF4;
+	}
+	else if((!(strcmp(Test,"FIX"))) == 1)
+	{
+		opcode = 0xC4;
+	}
+	else if((!(strcmp(Test,"LDB"))) == 1)
+	{
+		opcode = 0x68;
+	}
+	else if((!(strcmp(Test,"LDF"))) == 1)
+	{
+		opcode = 0x70;
+	}
+	else if((!(strcmp(Test,"LDS"))) == 1)
+	{
+		opcode = 0x6C;
+	}
+	else if((!(strcmp(Test,"LDT"))) == 1)
+	{
+		opcode = 0x74;
+	}
+	else if((!(strcmp(Test,"LPS"))) == 1)
+	{
+		opcode = 0xD0;
+	}
+	else if((!(strcmp(Test,"MULF"))) == 1)
+	{
+		opcode = 0x60;
+	}
+	else if((!(strcmp(Test,"MULR"))) == 1)
+	{
+		opcode = 0x98;
+	}
+	else if((!(strcmp(Test,"NORM"))) == 1)
+	{
+		opcode = 0xC8;
+	}
+	else if((!(strcmp(Test,"RMO"))) == 1)
+	{
+		opcode = 0xAC;
+	}
+	else if((!(strcmp(Test,"SHIFTL"))) == 1)
+	{
+		opcode = 0xA4;
+	}
+	else if((!(strcmp(Test,"SHIFTR"))) == 1)
+	{
+		opcode = 0xA8;
+	}
+	else if((!(strcmp(Test,"SIO"))) == 1)
+	{
+		opcode = 0xF0;
+	}
+	else if((!(strcmp(Test,"SSK"))) == 1)
+	{
+		opcode = 0xEC;
+	}
+	else if((!(strcmp(Test,"STB"))) == 1)
+	{
+		opcode = 0x78;
+	}
+	else if((!(strcmp(Test,"STF"))) == 1)
+	{
+		opcode = 0x80;
+	}
+	else if((!(strcmp(Test,"STI"))) == 1)
+	{
+		opcode = 0xD4;
+	}
+	else if((!(strcmp(Test,"STS"))) == 1)
+	{
+		opcode = 0x7C;
+	}
+	else if((!(strcmp(Test,"STT"))) == 1)
+	{
+		opcode = 0x84;
+	}
+	else if((!(strcmp(Test,"SUBF"))) == 1)
+	{
+		opcode = 0x5C;
+	}
+	else if((!(strcmp(Test,"SUBR"))) == 1)
+	{
+		opcode = 0x94;
+	}
+	else if((!(strcmp(Test,"SVC"))) == 1)
+	{
+		opcode = 0xB0;
+	}
+	else if((!(strcmp(Test,"TIO"))) == 1)
+	{
+		opcode = 0xF8;
+	}
+	else if((!(strcmp(Test,"TIXR"))) == 1)
+	{
+		opcode = 0xB8;
+	}
 	//printf("%d is the opcode\n",opcode); //test
 	return opcode;
 }
