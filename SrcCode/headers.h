@@ -35,6 +35,8 @@ struct records
 	int ByteRecord;
 	int regAddress1;
 	int regAddress2;
+	int disp;
+	int pcOrB;
 };
 
 typedef struct records RECORDS;

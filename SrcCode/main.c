@@ -515,7 +515,7 @@ int main( int argc, char* argv[]){
 			 }
 			 //NEW CODE ENDS HERE
 			 //printf("TESTING 1 after new code in path == 1 part 2\n");
-			 holdoperand = strtok_r(operand, " ,\t\n", &postfix); //extracts symbol from operand
+			 holdoperand = strtok_r(operand, " ,\t\n\r", &postfix); //extracts symbol from operand
 			 //printf("%s is stored in postfix\n",postfix); //test
 			 //printf("%s is stored in holdoperand\n",holdoperand);
 			 if(postfix!=NULL)
@@ -529,6 +529,7 @@ int main( int argc, char* argv[]){
 			    strcpy(operand, nexoperand); //copys operand into a seperate char array
 			 }
 			 //NEEDS TO BE MODIFIED FOR SICXE
+			 //printf("%d: Location Counter: %X\n", linectr, locctr);
 			 strcpy(RecTab[rindex].RecordType,"T"); //Sets the record type to a text
 			 RecTab[rindex].Address = locctr; //Puts the adress from the locctr into the RecTab
 			 //RecTab[rindex].Length = 0x03; //Stores the length of a SIC instruction (3 bytes) into the RecTab
@@ -551,13 +552,14 @@ int main( int argc, char* argv[]){
 				  }
 				 uniques++;
 			    }
-
 				//Create T records based on the format of the instruction
 				if(formatD[fiD] == 1) {
 					RecTab[rindex].Length = 0x01;
 				} else if(formatD[fiD] == 2) {
 					RecTab[rindex].Length = 0x02;
 					//printf("%s\n", nexoperand);
+
+					//if format 2 instruction deals with 2 registers, split the string based on the comma.
 					if((RecTab[rindex].opcode != 0xB4) && (RecTab[rindex].opcode != 0xB0) && (RecTab[rindex].opcode != 0xB8)) {
 						//printf("%s\n", operand);
 						nexoperand = strtok(operand, ",");
@@ -565,17 +567,130 @@ int main( int argc, char* argv[]){
 						nexoperand = strtok(NULL, ",");
 						RecTab[rindex].regAddress2 = RegisterValue(nexoperand);
 					}
-					else {
+					else { //if format 2 instruction deals with 1 register
 						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
 					}
-				} else if(formatD[fiD] == 3) {
+				} else if((formatD[fiD] == 3) && (!(strcmp(nextoken, "BASE"))) != 1) {
+					RecTab[rindex].Length = 0x03;
+					uniques=0;
+					int cHeCkEr = 0;
+					int lEnGtH = 0;
+					while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
+			    		{
+							//printf("HELLO WORLD\n"); //test
+							strcpy(sName, SymTab[uniques].Name);
+							//printf("HEY YOU!!\n");
+							if(strcmp(sName, operandsymboltwo) == 0)
+							{
+								RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
+								break;
+							}
+							uniques++;
+						}
+					if(strcmp(operandsymbol, "@") == 0) {
+						RecTab[rindex].opcode+=0x02;
+					}
+					else if(strcmp(operandsymbol, "#") == 0) {
+						lEnGtH = strlen(operandsymboltwo);
+						for(int L = 0; L < lEnGtH; L++) {
+							if(isdigit(operandsymboltwo[L]) == 0) {
+								break;
+							}
+							if(L != lEnGtH - 1) {
+								continue;
+							}
+							RecTab[rindex].opaddress = atoi(operandsymboltwo);
+							cHeCkEr = 1;
+						}
+						RecTab[rindex].opcode+=0x01;
+					}
+					else {
+						RecTab[rindex].opcode+=0x03;
+					}
+					if(cHeCkEr == 0) {
+						if(locctr >= RecTab[rindex].opaddress) {
+							RecTab[rindex].disp = locctr - RecTab[rindex].opaddress - 3; //- RecTab[rindex].Address;
+						}
+						else {
+							RecTab[rindex].disp = RecTab[rindex].opaddress - 3 - locctr;
+							printf("%d: %X, %X\n", linectr, RecTab[rindex].opaddress, locctr);
+						}
+						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+					}
+					lEnGtH = strlen(nexoperand);
+					int ctCom = 0;
+					int regLi = 0;
+					for(int L = 0; L < lEnGtH; L++) {
+						if(nexoperand[L] == ',') {
+							ctCom++;
+							continue;
+						}
+						if(ctCom == 1) {
+							//char reg = nexOPerand[L];
+							regLi = 1;
+							break;
+						}
+					}
+					if((regLi == 0) && (!(strcmp(nextoken, "RSUB"))) != 1) {
+						if((RecTab[rindex].disp < 0) && (RecTab[rindex].disp >= -2048)) {
+							RecTab[rindex].pcOrB = 0x24;
+						}
+						else if ((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 2047)) {
+							RecTab[rindex].pcOrB = 0x20;
+						}
+						else if((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 4095)) {
+							RecTab[rindex].pcOrB = 0x40;
+						}
+						else {
+							printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
+							fclose(fp);
+							return 0;
+						}
+					}
+					else {
+						RecTab[rindex].pcOrB = RecTab[rindex].Length;
+					}
 				
 				} else if(formatD[fiD] == 4) {
-					
+					RecTab[rindex].Length = 0x04;
+					//printf("operandsymbol: %s\n", operandsymbol);
+					//When fprinting the object code, hard code "10" in between the opcode and opaddress
+					uniques=0;
+						while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
+			    		{
+							//printf("HELLO WORLD\n"); //test
+							strcpy(sName, SymTab[uniques].Name);
+							//printf("HEY YOU!!\n");
+							if(strcmp(sName, operandsymboltwo) == 0)
+							{
+								RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
+								break;
+							}
+							uniques++;
+						}
+					if(strcmp(operandsymbol, "@") == 0) {
+						RecTab[rindex].opcode+=0x02;
+					}
+					else if(strcmp(operandsymbol, "#") == 0) {
+						int lEnGtH = strlen(operandsymboltwo);
+						for(int L = 0; L < lEnGtH; L++) {
+							if(isdigit(operandsymboltwo[L]) == 0) {
+								break;
+							}
+							if(L != lEnGtH - 1) {
+								continue;
+							}
+							RecTab[rindex].opaddress = atoi(operandsymboltwo);
+						}
+						RecTab[rindex].opcode+=0x01;
+					}
+					else {
+						RecTab[rindex].opcode+=0x03;
+					}
+					//printf("%X\n", RecTab[rindex].opaddress);
+				} //else {
 				
-				} else {
-				
-				}
+				//}
 			 uniques=0; //restarts uniques
 			 rindex++; //increments rindex to next position for modification record
 			 //printf("Before String compare within pass == 1 \n");
@@ -602,7 +717,11 @@ int main( int argc, char* argv[]){
 			 rindex++; //increments rindex to next position for next valid record
 			 //NEW LOCCTR
 			 //printf("TESTING 4\n");
-			 if(formatD[fiD] == 1) 
+			 if((!(strcmp(nextoken, "BASE"))) == 1) //Based on SCOFF document BASE doesn't increment locctr
+			 {
+				locpath = 0;
+			 } //end of if BASE
+			 else if(formatD[fiD] == 1) 
 			 { // The four next else if's increment the locctr based on the format.
 				 locctr += 0x01;
 			 } 
