@@ -594,7 +594,7 @@ int main( int argc, char* argv[]){
 					else { //if format 2 instruction deals with 1 register
 						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
 					}
-				} else if((formatD[fiD] == 3) && (!(strcmp(nextoken, "BASE"))) != 1) {
+				} else if(((formatD[fiD] == 3) && ((!(strcmp(nextoken, "BASE"))) != 1)))  {
 					RecTab[rindex].Length = 0x03;
 					uniques=0;
 					int cHeCkEr = 0;
@@ -633,11 +633,13 @@ int main( int argc, char* argv[]){
 					}
 					if(cHeCkEr == 0) {
 						if(locctr >= RecTab[rindex].opaddress) {
-							RecTab[rindex].disp = locctr - RecTab[rindex].opaddress - 3; //- RecTab[rindex].Address;
+							//RecTab[rindex].disp = locctr - RecTab[rindex].opaddress - 3; //- RecTab[rindex].Address;
+							RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
 						}
 						else {
-							RecTab[rindex].disp = RecTab[rindex].opaddress - 3 - locctr;
-							printf("%d: %X, %X\n", linectr, RecTab[rindex].opaddress, locctr);
+							//RecTab[rindex].disp = RecTab[rindex].opaddress - 3 - locctr;
+							RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							//printf("%d: %X, %X\n", linectr, RecTab[rindex].opaddress, locctr);
 						}
 						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 					}
@@ -651,28 +653,36 @@ int main( int argc, char* argv[]){
 						}
 						if(ctCom == 1) {
 							//char reg = nexOPerand[L];
+							//printf("This activated\n");
 							regLi = 1;
 							break;
 						}
 					}
-					if((regLi == 0) && (!(strcmp(nextoken, "RSUB"))) != 1) {
+					//printf("%d is the value of regLi\n",regLi);
+					//printf("%s is the string\n",nextoken);
+					//printf("%d is the value of the strcmp\n",(!(strcmp(nextoken, "RSUB"))));
+					if((regLi == 0) && ((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((RecTab[rindex].disp < 0) && (RecTab[rindex].disp >= -2048)) {
 							RecTab[rindex].pcOrB = 0x24;
+							//printf("1\n");
 						}
 						else if ((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 2047)) {
 							RecTab[rindex].pcOrB = 0x20;
+							//printf("2\n");
 						}
 						else if((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 4095)) {
 							RecTab[rindex].pcOrB = 0x40;
+							//printf("3\n");
 						}
 						else {
-							printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
+							//printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
 							fclose(fp);
 							return 0;
 						}
 					}
 					else {
 						RecTab[rindex].pcOrB = RecTab[rindex].Length;
+						printf("else statement occured\n");
 					}
 				
 				} else if(formatD[fiD] == 4) {
