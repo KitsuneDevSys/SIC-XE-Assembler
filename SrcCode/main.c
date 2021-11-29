@@ -459,6 +459,7 @@ int main( int argc, char* argv[]){
        	{
 		strcpy( fullline, line );
 		//printf("2 HELLO WORLD\n");
+		printf("linectr is %d\n",linectr);
 		if ( line[0] == 35) //Used to tell program to ignore comments
 	       	{  
 				linectr++;
@@ -635,6 +636,7 @@ int main( int argc, char* argv[]){
 						if(locctr >= RecTab[rindex].opaddress) {
 							//RecTab[rindex].disp = locctr - RecTab[rindex].opaddress - 3; //- RecTab[rindex].Address;
 							RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+
 						}
 						else {
 							//RecTab[rindex].disp = RecTab[rindex].opaddress - 3 - locctr;
@@ -644,6 +646,7 @@ int main( int argc, char* argv[]){
 						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 					}
 					lEnGtH = strlen(nexoperand);
+					//printf("TEST");
 					int ctCom = 0;
 					int regLi = 0;
 					for(int L = 0; L < lEnGtH; L++) {
@@ -661,21 +664,23 @@ int main( int argc, char* argv[]){
 					//printf("%d is the value of regLi\n",regLi);
 					//printf("%s is the string\n",nextoken);
 					//printf("%d is the value of the strcmp\n",(!(strcmp(nextoken, "RSUB"))));
+					printf("TEST before\n");
+					printf("%d is the decimal value of displacement\n",RecTab[rindex].disp);
 					if((regLi == 0) && ((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((RecTab[rindex].disp < 0) && (RecTab[rindex].disp >= -2048)) {
 							RecTab[rindex].pcOrB = 0x24;
-							//printf("1\n");
+							printf("1\n");
 						}
 						else if ((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 2047)) {
 							RecTab[rindex].pcOrB = 0x20;
-							//printf("2\n");
+							printf("2\n");
 						}
 						else if((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 4095)) {
 							RecTab[rindex].pcOrB = 0x40;
-							//printf("3\n");
+							printf("3\n");
 						}
 						else {
-							//printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
+							printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
 							fclose(fp);
 							return 0;
 						}
@@ -684,7 +689,7 @@ int main( int argc, char* argv[]){
 						RecTab[rindex].pcOrB = RecTab[rindex].Length;
 						printf("else statement occured\n");
 					}
-				
+					printf("TEST after\n");
 				} else if(formatD[fiD] == 4) {
 					RecTab[rindex].Length = 0x04;
 					//printf("operandsymbol: %s\n", operandsymbol);
@@ -1070,7 +1075,7 @@ int main( int argc, char* argv[]){
 		//printf("%d is the line\n",linectr); //TEST
 	} //end of second file read while
 	//Where I will open the obj file and start writing the RecTab to it
-	//printf("END HELLO WORLD\n");
+	printf("END HELLO WORLD\n");
 	wp = fopen( fname, "w"); //Creates the Object file to write the RecTab's contents.
 	if(wp == NULL) //Checks if file is able to be opened
 	{
