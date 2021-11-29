@@ -57,6 +57,9 @@ int main( int argc, char* argv[]){
 	char* holdoperand;
 	char postfixstring[1024]; //test
 	struct locationandline LocTab[1024]; //Used to store the locctr and its related linectr for use in format 3 and 4
+	int holddis; //used to hold negitive displacements to shorten them.
+	char sholddis[8]; //used to hold a string version of the integer string
+	char shortholddis[4]; //used to shorten the negdisplacement.
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -636,6 +639,14 @@ int main( int argc, char* argv[]){
 						if(locctr >= RecTab[rindex].opaddress) {
 							//RecTab[rindex].disp = locctr - RecTab[rindex].opaddress - 3; //- RecTab[rindex].Address;
 							RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							holddis = RecTab[rindex].disp;
+							//printf("%X is the value stored in holddis\n",holddis);
+							itoa(holddis,sholddis,16);
+							//printf("%s is the integer value as a string\n",sholddis);
+							strncpy(shortholddis, &sholddis[5],3);
+							printf("%s is the integer value as a string after strncpy\n",shortholddis);
+							printf("Neg displacement\n");
+							RecTab[rindex].disp = (int) strtol(shortholddis,NULL,16);
 
 						}
 						else {
