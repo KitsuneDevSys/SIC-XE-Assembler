@@ -56,6 +56,7 @@ int main( int argc, char* argv[]){
 	int fiD = 0; //increments when each iteration of while loop is finished.
 	char* holdoperand;
 	char postfixstring[1024]; //test
+	struct locationandline LocTab[1024]; //Used to store the locctr and its related linectr for use in format 3 and 4
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -158,14 +159,14 @@ int main( int argc, char* argv[]){
 			 {
 				strcpy(opcodesymbol,"0"); //Places a 0 if their is no symbol present
 			 }
-			 printf("The opcode stored is %s\n",opcode); //TEST
+			 //printf("The opcode stored is %s\n",opcode); //TEST
 			 holdsymbol = strtok_r(opcode, " +\t\n", &postfix); //removes + from opcode
 			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
 			 formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
-			 printf("Format: %d\n", formatD[fiD]);
+			 //printf("Format: %d\n", formatD[fiD]);
 			 strcpy(nextoken, opcode); //copys opcode into nextoken
-			 printf("|%s| is the opcode \n",opcode); //TEST
-			 printf("|%s| is the opcodesymbol extracted \n",opcodesymbol); //TEST
+			 //printf("|%s| is the opcode \n",opcode); //TEST
+			 //printf("|%s| is the opcodesymbol extracted \n",opcodesymbol); //TEST
 			 //printf("|%s| is the operand BEFORE \n",operand);
 			 //printf("|%c| is the operandsymbol BEFORE\n", nexoperand[0]); //TEST
 			 if( (nexoperand[0] == 35) || (nexoperand[0] == 64) )
@@ -178,17 +179,19 @@ int main( int argc, char* argv[]){
 			 }
 			 //printf("The operand stored is |%s|\n",operand); //TEST
 			 holdsymbol = strtok(operand, " #@\t\n"); //extracts symbol from operand
-			 printf("The string stored in holdsymbol is |%s|\n",holdsymbol);
+			 //printf("The string stored in holdsymbol is |%s|\n",holdsymbol);
 			 if(holdsymbol != NULL)
 			 {
 		     	strcpy(operand, holdsymbol); //stores the extracted symbol into the char array
-			 	printf("|%s| is the operand \n",operand);
+			 	//printf("|%s| is the operand \n",operand);
 			 	strcpy(nexoperand, operand); //copys operand into a seperate char array
 			 	//printf("%s is the operand \n",operand); //TEST
 			 	//printf("|%s| is the operandsymbol extracted \n",operandsymbol); //TEST
 			 }
-			printf("%s is the operand \n",operand);
-			printf("%s is the operandsymbol extracted \n",operandsymbol);
+			//printf("%s is the operand \n",operand);
+			//printf("%s is the operandsymbol extracted \n",operandsymbol);
+			LocTab[linectr].line = linectr;
+			LocTab[linectr].location = locctr;
 			 if((!(strcmp(nextoken, "BASE"))) == 1) //Based on SCOFF document BASE doesn't increment locctr
 			 {
 				locpath = 0;
@@ -290,6 +293,8 @@ int main( int argc, char* argv[]){
 					return 0;
 				}
 				SymTab[index].Address = locctr; //Stores Address in SymTab structure array
+				LocTab[linectr].line = linectr;
+			    LocTab[linectr].location = locctr;
 				locpath=0;
 			}  //end of if START
 			else if((!(strcmp(nextoken, "WORD"))) == 1)
@@ -311,6 +316,8 @@ int main( int argc, char* argv[]){
 				if((!(strcmp(prefix, "C"))) == 1)
 				{
 					SymTab[index].Address = locctr; //Stores Address in SymTab structure array
+					LocTab[linectr].line = linectr;
+			        LocTab[linectr].location = locctr;
 					locctr += strlen(Bw);
 					locpath=0;
 				} //end of c-if path
@@ -336,6 +343,8 @@ int main( int argc, char* argv[]){
 					else
 					{
 						SymTab[index].Address = locctr; //Stores Address in SymTab structure array
+						LocTab[linectr].line = linectr;
+			            LocTab[linectr].location = locctr;
 						locctr += (strlen(Bw))/2;
 						locpath = 0;
 					}
@@ -345,6 +354,8 @@ int main( int argc, char* argv[]){
 			{
 				Wn = strtol(operand,NULL,0); //Number of words to be stored in memory
 				SymTab[index].Address = locctr; //Stores Address in SymTab structure array
+				LocTab[linectr].line = linectr;
+			    LocTab[linectr].location = locctr;
 				locctr += 3 * Wn; //1 word is 3 bytes so (address = Wn * 3)
 				locpath = 0;
 			} //end of else-if RESW
@@ -352,6 +363,8 @@ int main( int argc, char* argv[]){
 			{
 				Bn = (int) strtol(operand,NULL,10); //takes the number of Bytes as a decimal value
 				SymTab[index].Address = locctr; //Stores Address in SymTab structure array
+				LocTab[linectr].line = linectr;
+			    LocTab[linectr].location = locctr;
 				locctr += Bn; //accounds the number of bytes for memory storage by incrementing locctr to the given operand decimal number
 				locpath = 0;
 			} //end of else-if RESB
@@ -364,6 +377,8 @@ int main( int argc, char* argv[]){
 			if(locpath==1 && path!=1) //Insures specific dirrectives dont trigger this (i.e. START and BYTE) and path=1 path doesnt trigger this
 			{
 				SymTab[index].Address = locctr; //Stores Address in SymTab structure array
+				LocTab[linectr].line = linectr;
+			    LocTab[linectr].location = locctr;
 				if(formatD[fiD] == 1) 
 				{ // The four next else if's increment the locctr based on the format.
 				 locctr += 0x01;
@@ -416,9 +431,18 @@ int main( int argc, char* argv[]){
 		printf("%s			%X\n",SymTab[SymIndex].Name, SymTab[SymIndex].Address);
 		SymIndex++;
 	}//end of SymTab print while
-	
 	//end of Pass 1
 	
+	int I = 1;
+	while(I < linectr) //Prints out the LocTab table (test)
+	{
+		printf("%d			%X\n",LocTab[I].line, LocTab[I].location);
+		I++;
+	}
+
+
+
+
 	//Start of Pass 2
 	locctr -= 3; //last inctruction/directive, END, shouldn't progress locctr
 	pLength = locctr - SymTab[0].Address;
@@ -956,6 +980,7 @@ int main( int argc, char* argv[]){
 			else if((!(strcmp(nextoken, "BASE"))) == 1) //Based on SCOFF document BASE doesn't increment locctr
 			{
 				locpath = 0;
+				trecpath = 0;
 			} //end of else-if BASE
 			else if(FirstSICInstruction==1) //If the nextoken is the first SIC Instruction, this will execute
 			{

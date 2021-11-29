@@ -41,6 +41,15 @@ struct records
 
 typedef struct records RECORDS;
 
+
+struct locationandline
+{
+	int line;
+	int location;
+};
+
+typedef struct locationandline LOCANDLIN;
+
 int IsAValidSymbol( char *TestSymbol );
 int IsADirective( char *Test );
 int IsAnInstruction( char *Test);
