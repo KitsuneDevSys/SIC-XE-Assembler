@@ -673,11 +673,12 @@ int main( int argc, char* argv[]){
 							ctCom++;
 							continue;
 						}
-						if(ctCom == 1) {
-							//char reg = nexOPerand[L];
-							//printf("This activated\n");
+						if((ctCom == 1) && (nexoperand[L] == 'X')) {
 							regLi = 1;
 							break;
+						}
+						else {
+							ctCom = 0;
 						}
 					}
 					//printf("%d is the value of regLi\n",regLi);
@@ -685,15 +686,23 @@ int main( int argc, char* argv[]){
 					//printf("%d is the value of the strcmp\n",(!(strcmp(nextoken, "RSUB"))));
 					//printf("TEST before\n");
 					printf("%d is the decimal value of displacement\n",RecTab[rindex].disp);
-					if((regLi == 0) && ((!(strcmp(nextoken, "RSUB"))) != 1)) {
+					if(((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((FullDis <= 2047) && (FullDis >= -2048)) {
 							RecTab[rindex].pcOrB = 0x02;
 							printf("1\n");
 						}
 						else {
+							FullDis = RecTab[rindex].opaddress - BaseAddress;
 							if((FullDis >= 0) && (FullDis <= 4095)) { //replace FullDis with Base disp
-								RecTab[rindex].pcOrB = 0x04;
-								printf("3\n");
+								if(regLi == 1) {
+									RecTab[rindex].pcOrB = 0x0C;
+									printf("2\n");
+								}
+								else {
+									RecTab[rindex].pcOrB = 0x04;
+									printf("3\n");
+								}
+								RecTab[rindex].disp = FullDis;
 							}
 							else {
 								printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
