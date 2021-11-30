@@ -1,4 +1,11 @@
 # SIC-XE-Assembler
+## V0.4: November 29, 2021 Changelog
+- Format 1,2 and 3 fully implemented in Pass 2.
+ - Printing of T Records of such will come later.
+- Fully implemented displacement calculations in format 3.
+  - All bugs have been fixed.
+- Implemented a LocTab for use in format 3.
+  - Keeps track of address location for all lines in the given sic/xe file.
 ## V0.3: November 26, 2021 Changelog
 - Implementation of formats 1,2,3 and 4 within pass 1 have been added.
 - Pass 1 complete: proper symbol table output is achieved.
