@@ -717,9 +717,10 @@ int main( int argc, char* argv[]){
 							}
 						}
 					}
-					else {
-						RecTab[rindex].pcOrB = RecTab[rindex].Length;
-						//printf("else statement occured\n");
+					else{
+						RecTab[rindex].pcOrB = 0x00;
+						RecTab[rindex].disp = 0x000;
+						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 					}
 					//printf("TEST after\n");
 				} else if(formatD[fiD] == 4) {
