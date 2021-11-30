@@ -437,14 +437,14 @@ int main( int argc, char* argv[]){
 		SymIndex++;
 	}//end of SymTab print while
 	//end of Pass 1
-	
+	/*
 	int I = 1;
 	while(I < linectr) //Prints out the LocTab table (test)
 	{
 		printf("%d			%X\n",LocTab[I].line, LocTab[I].location);
 		I++;
 	}
-
+	*/
 
 
 
@@ -600,7 +600,7 @@ int main( int argc, char* argv[]){
 					else { //if format 2 instruction deals with 1 register
 						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
 					}
-				} else if(((formatD[fiD] == 3) && ((!(strcmp(nextoken, "BASE"))) != 1)))  {
+				} else if(((formatD[fiD] == 3) && ((!(strcmp(nextoken, "BASE"))) != 1) && ((!(strcmp(nextoken, "END"))) != 1))) {
 					RecTab[rindex].Length = 0x03;
 					uniques=0;
 					int cHeCkEr = 0;
@@ -622,6 +622,7 @@ int main( int argc, char* argv[]){
 					}
 					else if(strcmp(operandsymbol, "#") == 0) {
 						lEnGtH = strlen(operandsymboltwo);
+						//printf("%s\n",operandsymboltwo);
 						for(int L = 0; L < lEnGtH; L++) {
 							if(isdigit(operandsymboltwo[L]) == 0) {
 								break;
@@ -629,7 +630,10 @@ int main( int argc, char* argv[]){
 							if(L != lEnGtH - 1) {
 								continue;
 							}
+							//printf("Before %s\n",operandsymboltwo);
 							RecTab[rindex].opaddress = atoi(operandsymboltwo);
+							//printf("After %d\n",RecTab[rindex].opaddress);
+							RecTab[rindex].disp = RecTab[rindex].opaddress;
 							cHeCkEr = 1;
 						}
 						RecTab[rindex].opcode+=0x01;
@@ -643,15 +647,15 @@ int main( int argc, char* argv[]){
 							//RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
 							holddis = RecTab[rindex].opaddress - LocTab[linectr+1].location;
 							FullDis = holddis;
-							printf("%X is the value stored in holddis\n",holddis);
-							printf("%d is the decimal value stored in holddis\n",holddis);
-							printf("%X is the opaddress and %X is the LocTab\n", RecTab[rindex].opaddress, LocTab[linectr+1].location);
+							//printf("%X is the value stored in holddis\n",holddis);
+							//printf("%d is the decimal value stored in holddis\n",holddis);
+							//printf("%X is the opaddress and %X is the LocTab\n", RecTab[rindex].opaddress, LocTab[linectr+1].location);
 							//itoa(holddis,sholddis,16);
 							snprintf(sholddis,9,"%X",holddis);
 							//printf("%s is the integer value as a string\n",sholddis);
 							strncpy(shortholddis, &sholddis[5],3);
-							printf("%s is the integer value as a string after strncpy\n",shortholddis);
-							printf("Neg displacement\n");
+							//printf("%s is the integer value as a string after strncpy\n",shortholddis);
+							//printf("Neg displacement\n");
 							RecTab[rindex].disp = (int) strtol(shortholddis,NULL,16);
 
 						}
@@ -662,7 +666,7 @@ int main( int argc, char* argv[]){
 							FullDis = holddis;
 							//printf("%d: %X, %X\n", linectr, RecTab[rindex].opaddress, locctr);
 						}
-						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+						//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 					}
 					lEnGtH = strlen(nexoperand);
 					//printf("TEST");
@@ -685,24 +689,26 @@ int main( int argc, char* argv[]){
 					//printf("%s is the string\n",nextoken);
 					//printf("%d is the value of the strcmp\n",(!(strcmp(nextoken, "RSUB"))));
 					//printf("TEST before\n");
-					printf("%d is the decimal value of displacement\n",RecTab[rindex].disp);
+					//printf("%d is the decimal value of displacement\n",RecTab[rindex].disp);
 					if(((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((FullDis <= 2047) && (FullDis >= -2048)) {
 							RecTab[rindex].pcOrB = 0x02;
-							printf("1\n");
+							printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+							//printf("1\n");
 						}
 						else {
 							FullDis = RecTab[rindex].opaddress - BaseAddress;
 							if((FullDis >= 0) && (FullDis <= 4095)) { //replace FullDis with Base disp
 								if(regLi == 1) {
 									RecTab[rindex].pcOrB = 0x0C;
-									printf("2\n");
+									//printf("2\n");
 								}
 								else {
 									RecTab[rindex].pcOrB = 0x04;
-									printf("3\n");
+									//printf("3\n");
 								}
 								RecTab[rindex].disp = FullDis;
+								printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							}
 							else {
 								printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
