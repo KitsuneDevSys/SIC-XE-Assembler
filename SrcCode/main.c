@@ -61,6 +61,7 @@ int main( int argc, char* argv[]){
 	int FullDis; //used to determin if we use PC or BASE
 	char sholddis[8]; //used to hold a string version of the integer string
 	char shortholddis[4]; //used to shorten the negdisplacement.
+	int BaseAddress; //Used to store the BASE Address.
 
 	if ( argc != 2 ) //Checks if user inputed two arguments when running this program
     {
@@ -758,6 +759,22 @@ int main( int argc, char* argv[]){
 			 {
 				locpath = 0;
 				mrecpath= 0;
+				//printf("%X is the value of the locctr at BASE\n",locctr);
+				//printf("|%s| is the string in operandtwo\n",operandsymboltwo);
+				while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
+			    {
+				  //printf("HELLO WORLD\n"); //test
+				  strcpy(sName, SymTab[uniques].Name);
+				  //printf("\n");
+				  if(strcmp(sName, operandsymboltwo) == 0)
+				  {
+					BaseAddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
+				  }
+				 uniques++;
+			    }
+				uniques = 0;
+				printf("%X is the value of the BASE Address at line %d\n",BaseAddress,linectr);
+
 			 } //end of if BASE
 			 if(mrecpath ==1) //Used to Prevent RSUB Modification Records Exclusively
 			 {
@@ -840,7 +857,7 @@ int main( int argc, char* argv[]){
 			    strcpy(nextoken, opcode); //copys opcode into nextoken
 				formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
 			} //end if
-			//printf("|%s| is the string stored in operandtwo\n",operandsymboltwo);
+			//printf("|%s| is the string stored in operandtwo in pass !=1 \n",operandsymboltwo);
 			if( IsAValidSymbol(operandsymboltwo) != 0 ) //Used to check if operands that are symbols are within the symbol table
 		    {
 			   while(SymTab[uniques].Name[1] != '\0') //used to check if symbol is in table
