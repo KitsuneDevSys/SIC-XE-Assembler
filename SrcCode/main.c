@@ -58,6 +58,7 @@ int main( int argc, char* argv[]){
 	char postfixstring[1024]; //test
 	struct locationandline LocTab[1024]; //Used to store the locctr and its related linectr for use in format 3 and 4
 	int holddis; //used to hold negitive displacements to shorten them.
+	int FullDis; //used to determin if we use PC or BASE
 	char sholddis[8]; //used to hold a string version of the integer string
 	char shortholddis[4]; //used to shorten the negdisplacement.
 
@@ -638,10 +639,14 @@ int main( int argc, char* argv[]){
 					if(cHeCkEr == 0) {
 						if(locctr >= RecTab[rindex].opaddress) {
 							//RecTab[rindex].disp = locctr - RecTab[rindex].opaddress - 3; //- RecTab[rindex].Address;
-							RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
-							holddis = RecTab[rindex].disp;
-							//printf("%X is the value stored in holddis\n",holddis);
-							itoa(holddis,sholddis,16);
+							//RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							holddis = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							FullDis = holddis;
+							printf("%X is the value stored in holddis\n",holddis);
+							printf("%d is the decimal value stored in holddis\n",holddis);
+							printf("%X is the opaddress and %X is the LocTab\n", RecTab[rindex].opaddress, LocTab[linectr+1].location);
+							//itoa(holddis,sholddis,16);
+							snprintf(sholddis,9,"%X",holddis);
 							//printf("%s is the integer value as a string\n",sholddis);
 							strncpy(shortholddis, &sholddis[5],3);
 							printf("%s is the integer value as a string after strncpy\n",shortholddis);
@@ -675,7 +680,7 @@ int main( int argc, char* argv[]){
 					//printf("%d is the value of regLi\n",regLi);
 					//printf("%s is the string\n",nextoken);
 					//printf("%d is the value of the strcmp\n",(!(strcmp(nextoken, "RSUB"))));
-					printf("TEST before\n");
+					//printf("TEST before\n");
 					printf("%d is the decimal value of displacement\n",RecTab[rindex].disp);
 					if((regLi == 0) && ((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((RecTab[rindex].disp < 0) && (RecTab[rindex].disp >= -2048)) {
@@ -698,9 +703,9 @@ int main( int argc, char* argv[]){
 					}
 					else {
 						RecTab[rindex].pcOrB = RecTab[rindex].Length;
-						printf("else statement occured\n");
+						//printf("else statement occured\n");
 					}
-					printf("TEST after\n");
+					//printf("TEST after\n");
 				} else if(formatD[fiD] == 4) {
 					RecTab[rindex].Length = 0x04;
 					//printf("operandsymbol: %s\n", operandsymbol);
