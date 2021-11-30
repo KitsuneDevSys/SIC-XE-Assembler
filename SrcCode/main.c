@@ -656,7 +656,9 @@ int main( int argc, char* argv[]){
 						}
 						else {
 							//RecTab[rindex].disp = RecTab[rindex].opaddress - 3 - locctr;
+							holddis = RecTab[rindex].opaddress - LocTab[linectr+1].location;
 							RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							FullDis = holddis;
 							//printf("%d: %X, %X\n", linectr, RecTab[rindex].opaddress, locctr);
 						}
 						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
@@ -683,22 +685,20 @@ int main( int argc, char* argv[]){
 					//printf("TEST before\n");
 					printf("%d is the decimal value of displacement\n",RecTab[rindex].disp);
 					if((regLi == 0) && ((!(strcmp(nextoken, "RSUB"))) != 1)) {
-						if((RecTab[rindex].disp < 0) && (RecTab[rindex].disp >= -2048)) {
-							RecTab[rindex].pcOrB = 0x24;
+						if((FullDis <= 2047) && (FullDis >= -2048)) {
+							RecTab[rindex].pcOrB = 0x02;
 							printf("1\n");
 						}
-						else if ((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 2047)) {
-							RecTab[rindex].pcOrB = 0x20;
-							printf("2\n");
-						}
-						else if((RecTab[rindex].disp >= 0) && (RecTab[rindex].disp <= 4095)) {
-							RecTab[rindex].pcOrB = 0x40;
-							printf("3\n");
-						}
 						else {
-							printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
-							fclose(fp);
-							return 0;
+							if((FullDis >= 0) && (FullDis <= 4095)) { //replace FullDis with Base disp
+								RecTab[rindex].pcOrB = 0x04;
+								printf("3\n");
+							}
+							else {
+								printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
+								fclose(fp);
+								return 0;
+							}
 						}
 					}
 					else {
