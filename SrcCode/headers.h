@@ -45,6 +45,7 @@ typedef struct records RECORDS;
 struct locationandline
 {
 	int line;
+	
 	int location;
 };
 
