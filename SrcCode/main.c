@@ -694,6 +694,10 @@ int main( int argc, char* argv[]){
 					if(((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((FullDis <= 2047) && (FullDis >= -2048)) {
 							RecTab[rindex].pcOrB = 0x02;
+							if(cHeCkEr == 1)
+							{
+								RecTab[rindex].pcOrB = 0x00;
+							}
 							//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							//printf("1\n");
 						}
@@ -702,9 +706,17 @@ int main( int argc, char* argv[]){
 							if((FullDis >= 0) && (FullDis <= 4095)) { //replace FullDis with Base disp
 								if(regLi == 1) {
 									RecTab[rindex].pcOrB = 0x0C;
+									if(cHeCkEr == 1)
+									{
+										RecTab[rindex].pcOrB = 0x00;
+									}
 									//printf("2\n");
 								}
 								else {
+									if(cHeCkEr == 1)
+									{
+										RecTab[rindex].pcOrB = 0x00;
+									}
 									RecTab[rindex].pcOrB = 0x04;
 									//printf("3\n");
 								}
@@ -1179,6 +1191,10 @@ int main( int argc, char* argv[]){
 					if(((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((FullDis <= 2047) && (FullDis >= -2048)) {
 							RecTab[rindex].pcOrB = 0x02;
+							if(cHeCkEr == 1)
+							{
+								RecTab[rindex].pcOrB = 0x00;
+							}
 							//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							//printf("1\n");
 						}
@@ -1187,9 +1203,17 @@ int main( int argc, char* argv[]){
 							if((FullDis >= 0) && (FullDis <= 4095)) { //replace FullDis with Base disp
 								if(regLi == 1) {
 									RecTab[rindex].pcOrB = 0x0C;
+									if(cHeCkEr == 1)
+									{
+										RecTab[rindex].pcOrB = 0x00;
+									}
 									//printf("2\n");
 								}
 								else {
+									if(cHeCkEr == 1)
+									{
+										RecTab[rindex].pcOrB = 0x00;
+									}
 									RecTab[rindex].pcOrB = 0x04;
 									//printf("3\n");
 								}
@@ -1344,7 +1368,7 @@ int main( int argc, char* argv[]){
 					printf("Format 4: %s%06X%02X%02X10%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
 					//fprintf(wp,"%s%06X%02X%02X10%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
 				}
-				else {
+				else if(RecTab[RecIndex].Length == 3) {
 					printf("Format 3: %s%06X%02X%02X%01X%03X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
 					//fprintf(wp,"%s%06X%02X%02X%01X%03X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
 				}
