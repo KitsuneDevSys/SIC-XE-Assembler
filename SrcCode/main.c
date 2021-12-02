@@ -464,7 +464,7 @@ int main( int argc, char* argv[]){
        	{
 		strcpy( fullline, line );
 		//printf("2 HELLO WORLD\n");
-		printf("linectr is %d\n",linectr);
+		//printf("linectr is %d\n",linectr);
 		if ( line[0] == 35) //Used to tell program to ignore comments
 	       	{  
 				linectr++;
@@ -694,7 +694,7 @@ int main( int argc, char* argv[]){
 					if(((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((FullDis <= 2047) && (FullDis >= -2048)) {
 							RecTab[rindex].pcOrB = 0x02;
-							printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+							//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							//printf("1\n");
 						}
 						else {
@@ -793,7 +793,7 @@ int main( int argc, char* argv[]){
 				printf("%X is the value of the BASE Address at line %d\n",BaseAddress,linectr);
 
 			 } //end of if BASE
-			 if(mrecpath ==1) //Used to Prevent RSUB Modification Records Exclusively
+			 if((mrecpath == 1) && (formatD[fiD] == 4) && (strcmp(operandsymbol, "@") != 0) && (strcmp(operandsymbol, "#") != 0)) //Used to Prevent RSUB Modification Records Exclusively
 			 {
 			 strcpy(RecTab[rindex].RecordType,"M");
 			 RecTab[rindex].Address = locctr+1;
@@ -1179,7 +1179,7 @@ int main( int argc, char* argv[]){
 					if(((!(strcmp(nextoken, "RSUB"))) != 1)) {
 						if((FullDis <= 2047) && (FullDis >= -2048)) {
 							RecTab[rindex].pcOrB = 0x02;
-							printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+							//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							//printf("1\n");
 						}
 						else {
@@ -1194,7 +1194,7 @@ int main( int argc, char* argv[]){
 									//printf("3\n");
 								}
 								RecTab[rindex].disp = FullDis;
-								printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+								//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							}
 							else {
 								printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
@@ -1206,7 +1206,7 @@ int main( int argc, char* argv[]){
 					else{
 						RecTab[rindex].pcOrB = 0x00;
 						RecTab[rindex].disp = 0x000;
-						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+						//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 					}
 					//printf("TEST after\n");
 				} else if(formatD[fiD] == 4) {
@@ -1262,8 +1262,9 @@ int main( int argc, char* argv[]){
 			 //printf("Before String compare within pass == 1 \n");
 				rindex++;
 			}
-			if(mrecpath == 1) //creates modification records for lines with a symbol defined 
+			if((mrecpath == 1) && (formatD[fiD] == 4) && (strcmp(operandsymbol, "@") != 0) && (strcmp(operandsymbol, "#") != 0)) //creates modification records for lines with a symbol defined 
 			{
+				printf("%d: Linectr\n",linectr);
 				strcpy(RecTab[rindex].RecordType,"M");
 				RecTab[rindex].Address = locctr+1;
 				RecTab[rindex].Length = 0x05;
