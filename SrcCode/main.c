@@ -599,6 +599,7 @@ int main( int argc, char* argv[]){
 					}
 					else { //if format 2 instruction deals with 1 register
 						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
+						RecTab[rindex].regAddress2 = 0;
 					}
 				} else if(((formatD[fiD] == 3) && ((!(strcmp(nextoken, "BASE"))) != 1) && ((!(strcmp(nextoken, "END"))) != 1))) {
 					RecTab[rindex].Length = 0x03;
@@ -759,7 +760,7 @@ int main( int argc, char* argv[]){
 					else {
 						RecTab[rindex].opcode+=0x03;
 					}
-					//printf("%X\n", RecTab[rindex].opaddress);
+					printf("Opaddress: %X\n", RecTab[rindex].opaddress);
 				} //else {
 				
 				//}
@@ -1067,23 +1068,205 @@ int main( int argc, char* argv[]){
 			    }uniques=0; //restarts uniques
 				RecTab[rindex].Length = 0x03; //Stores the length of an instruction (3 bytes) into the RecTab
 				RecTab[rindex].opcode = InstructionToOpcode(nextoken); //Stores the opcode value of the instruction into the RecTab (but not the address)
-				while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
-			    {
-				  strcpy(sName, SymTab[uniques].Name);
-				  if(strcmp(sName, operandsymboltwo) == 0) //NEED TO TAKE INTO ACCOUNT THE X ADDRESSES FOR SYMBOL,X
-				  {
-					 RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
-					 break;
-				  }
-				 uniques++;
-			    }uniques=0; //restarts uniques
+				if(formatD[fiD] == 1) {
+					RecTab[rindex].Length = 0x01;
+				} else if(formatD[fiD] == 2) {
+					RecTab[rindex].Length = 0x02;
+					//printf("%s\n", nexoperand);
+
+					//if format 2 instruction deals with 2 registers, split the string based on the comma.
+					if((RecTab[rindex].opcode != 0xB4) && (RecTab[rindex].opcode != 0xB0) && (RecTab[rindex].opcode != 0xB8)) {
+						//printf("%s\n", operand);
+						nexoperand = strtok(operand, ",");
+						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
+						nexoperand = strtok(NULL, ",");
+						RecTab[rindex].regAddress2 = RegisterValue(nexoperand);
+					}
+					else { //if format 2 instruction deals with 1 register
+						RecTab[rindex].regAddress1 = RegisterValue(nexoperand);
+						RecTab[rindex].regAddress2 = 0;
+					}
+				} else if(((formatD[fiD] == 3) && ((!(strcmp(nextoken, "BASE"))) != 1) && ((!(strcmp(nextoken, "END"))) != 1))) {
+					RecTab[rindex].Length = 0x03;
+					uniques=0;
+					int cHeCkEr = 0;
+					int lEnGtH = 0;
+					while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
+			    		{
+							//printf("HELLO WORLD\n"); //test
+							strcpy(sName, SymTab[uniques].Name);
+							//printf("HEY YOU!!\n");
+							if(strcmp(sName, operandsymboltwo) == 0)
+							{
+								RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
+								break;
+							}
+							uniques++;
+						}
+					if(strcmp(operandsymbol, "@") == 0) {
+						RecTab[rindex].opcode+=0x02;
+					}
+					else if(strcmp(operandsymbol, "#") == 0) {
+						lEnGtH = strlen(operandsymboltwo);
+						//printf("%s\n",operandsymboltwo);
+						for(int L = 0; L < lEnGtH; L++) {
+							if(isdigit(operandsymboltwo[L]) == 0) {
+								break;
+							}
+							if(L != lEnGtH - 1) {
+								continue;
+							}
+							//printf("Before %s\n",operandsymboltwo);
+							RecTab[rindex].opaddress = atoi(operandsymboltwo);
+							//printf("After %d\n",RecTab[rindex].opaddress);
+							RecTab[rindex].disp = RecTab[rindex].opaddress;
+							cHeCkEr = 1;
+						}
+						RecTab[rindex].opcode+=0x01;
+					}
+					else {
+						RecTab[rindex].opcode+=0x03;
+					}
+					if(cHeCkEr == 0) {
+						if(locctr >= RecTab[rindex].opaddress) {
+							//RecTab[rindex].disp = locctr - RecTab[rindex].opaddress - 3; //- RecTab[rindex].Address;
+							//RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							holddis = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							FullDis = holddis;
+							//printf("%X is the value stored in holddis\n",holddis);
+							//printf("%d is the decimal value stored in holddis\n",holddis);
+							//printf("%X is the opaddress and %X is the LocTab\n", RecTab[rindex].opaddress, LocTab[linectr+1].location);
+							//itoa(holddis,sholddis,16);
+							snprintf(sholddis,9,"%X",holddis);
+							//printf("%s is the integer value as a string\n",sholddis);
+							strncpy(shortholddis, &sholddis[5],3);
+							//printf("%s is the integer value as a string after strncpy\n",shortholddis);
+							//printf("Neg displacement\n");
+							RecTab[rindex].disp = (int) strtol(shortholddis,NULL,16);
+
+						}
+						else {
+							//RecTab[rindex].disp = RecTab[rindex].opaddress - 3 - locctr;
+							holddis = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							RecTab[rindex].disp = RecTab[rindex].opaddress - LocTab[linectr+1].location;
+							FullDis = holddis;
+							//printf("%d: %X, %X\n", linectr, RecTab[rindex].opaddress, locctr);
+						}
+						//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+					}
+					lEnGtH = strlen(nexoperand);
+					//printf("TEST");
+					int ctCom = 0;
+					int regLi = 0;
+					for(int L = 0; L < lEnGtH; L++) {
+						if(nexoperand[L] == ',') {
+							ctCom++;
+							continue;
+						}
+						if((ctCom == 1) && (nexoperand[L] == 'X')) {
+							regLi = 1;
+							break;
+						}
+						else {
+							ctCom = 0;
+						}
+					}
+					//printf("%d is the value of regLi\n",regLi);
+					//printf("%s is the string\n",nextoken);
+					//printf("%d is the value of the strcmp\n",(!(strcmp(nextoken, "RSUB"))));
+					//printf("TEST before\n");
+					//printf("%d is the decimal value of displacement\n",RecTab[rindex].disp);
+					if(((!(strcmp(nextoken, "RSUB"))) != 1)) {
+						if((FullDis <= 2047) && (FullDis >= -2048)) {
+							RecTab[rindex].pcOrB = 0x02;
+							printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+							//printf("1\n");
+						}
+						else {
+							FullDis = RecTab[rindex].opaddress - BaseAddress;
+							if((FullDis >= 0) && (FullDis <= 4095)) { //replace FullDis with Base disp
+								if(regLi == 1) {
+									RecTab[rindex].pcOrB = 0x0C;
+									//printf("2\n");
+								}
+								else {
+									RecTab[rindex].pcOrB = 0x04;
+									//printf("3\n");
+								}
+								RecTab[rindex].disp = FullDis;
+								printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+							}
+							else {
+								printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
+								fclose(fp);
+								return 0;
+							}
+						}
+					}
+					else{
+						RecTab[rindex].pcOrB = 0x00;
+						RecTab[rindex].disp = 0x000;
+						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+					}
+					//printf("TEST after\n");
+				} else if(formatD[fiD] == 4) {
+					RecTab[rindex].Length = 0x04;
+					//printf("operandsymbol: %s\n", operandsymbol);
+					//When fprinting the object code, hard code "10" in between the opcode and opaddress
+					uniques=0;
+						while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
+			    		{
+							//printf("HELLO WORLD\n"); //test
+							strcpy(sName, SymTab[uniques].Name);
+							//printf("HEY YOU!!\n");
+							if(strcmp(sName, operandsymboltwo) == 0)
+							{
+								RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
+								break;
+							}
+							uniques++;
+						}
+					if(strcmp(operandsymbol, "@") == 0) {
+						RecTab[rindex].opcode+=0x02;
+					}
+					else if(strcmp(operandsymbol, "#") == 0) {
+						int lEnGtH = strlen(operandsymboltwo);
+						for(int L = 0; L < lEnGtH; L++) {
+							if(isdigit(operandsymboltwo[L]) == 0) {
+								break;
+							}
+							if(L != lEnGtH - 1) {
+								continue;
+							}
+							RecTab[rindex].opaddress = atoi(operandsymboltwo);
+						}
+						RecTab[rindex].opcode+=0x01;
+					}
+					else {
+						RecTab[rindex].opcode+=0x03;
+					}
+					printf("Opaddress: %X\n", RecTab[rindex].opaddress);
+				} else {
+					uniques=0; 
+					while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
+			    	{
+				  		strcpy(sName, SymTab[uniques].Name);
+				  		if(strcmp(sName, operandsymboltwo) == 0) //NEED TO TAKE INTO ACCOUNT THE X ADDRESSES FOR SYMBOL,X
+				  		{
+					 		RecTab[rindex].opaddress = SymTab[uniques].Address; //Puts the address from the SymTab into the RecTab
+					 		break;
+				  		}
+				 		uniques++;
+			    	}uniques=0; //restarts uniques
+				}
+			 //printf("Before String compare within pass == 1 \n");
 				rindex++;
 			}
 			if(mrecpath == 1) //creates modification records for lines with a symbol defined 
 			{
 				strcpy(RecTab[rindex].RecordType,"M");
 				RecTab[rindex].Address = locctr+1;
-				RecTab[rindex].Length = 0x04;
+				RecTab[rindex].Length = 0x05;
 				RecTab[rindex].ModFlag = '+';
 				strcpy(RecTab[rindex].SymbolMod, SymTab[0].Name);
 				rindex++;
@@ -1148,8 +1331,24 @@ int main( int argc, char* argv[]){
 		{
 			if(RecTab[RecIndex].ByteRecord != 1)
 			{
-			//printf("%s%06X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
-			fprintf(wp,"%s%06X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
+				if(RecTab[RecIndex].Length == 1) {
+					//printf("%s%06X%02X%02X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode);
+					fprintf(wp,"%s%06X%02X%02X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode);
+				}
+				else if(RecTab[RecIndex].Length == 2) {
+					//printf("%s%06X%02X%02X%01X%01X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].regAddress1, RecTab[RecIndex].regAddress2);
+					fprintf(wp,"%s%06X%02X%02X%01X%01X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].regAddress1, RecTab[RecIndex].regAddress2);
+				}	
+				else if(RecTab[RecIndex].Length == 4) {
+					//printf("%s%06X%02X%02X10%04X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
+					fprintf(wp,"%s%06X%02X%02X10%04X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
+				}
+				else {
+					//printf("%s%06X%02X%02X%01X%03X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
+					fprintf(wp,"%s%06X%02X%02X%01X%03X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
+				}
+			//old sic pass 2//printf("%s%06X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
+			//old sic pass 2//fprintf(wp,"%s%06X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
 			RecIndex++;
 			}
 			else if(RecTab[RecIndex].ByteRecord == 1)
@@ -1161,8 +1360,10 @@ int main( int argc, char* argv[]){
 		}
 		else if((strcmp(RecTab[RecIndex].RecordType,"M") == 0) && RecordOrder == 3)
 		{
-			//printf("%s%06X%02X%c%s\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].ModFlag, RecTab[RecIndex].SymbolMod);
-			fprintf(wp,"%s%06X%02X%c%s\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].ModFlag, RecTab[RecIndex].SymbolMod);
+			if((RecTab[RecIndex].Length == 4) && (strcmp(operandsymbol, "@") != 0) && (strcmp(operandsymbol, "#") != 0)) {
+				//printf("%s%06X%02X%c%s\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].ModFlag, RecTab[RecIndex].SymbolMod);
+				fprintf(wp,"%s%06X%02X%c%s\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].ModFlag, RecTab[RecIndex].SymbolMod);
+			}
 			RecIndex++;
 		}
 		else if((strcmp(RecTab[RecIndex].RecordType,"E") == 0) && RecordOrder == 4)
