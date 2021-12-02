@@ -709,7 +709,7 @@ int main( int argc, char* argv[]){
 									//printf("3\n");
 								}
 								RecTab[rindex].disp = FullDis;
-								printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+								//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							}
 							else {
 								printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
@@ -721,7 +721,7 @@ int main( int argc, char* argv[]){
 					else{
 						RecTab[rindex].pcOrB = 0x00;
 						RecTab[rindex].disp = 0x000;
-						printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
+						//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 					}
 					//printf("TEST after\n");
 				} else if(formatD[fiD] == 4) {
@@ -760,7 +760,7 @@ int main( int argc, char* argv[]){
 					else {
 						RecTab[rindex].opcode+=0x03;
 					}
-					printf("Opaddress: %X\n", RecTab[rindex].opaddress);
+					//printf("Opaddress: %X\n", RecTab[rindex].opaddress);
 				} //else {
 				
 				//}
@@ -797,7 +797,7 @@ int main( int argc, char* argv[]){
 			 {
 			 strcpy(RecTab[rindex].RecordType,"M");
 			 RecTab[rindex].Address = locctr+1;
-			 RecTab[rindex].Length = 0x04;
+			 RecTab[rindex].Length = 0x05;
 			 RecTab[rindex].ModFlag = '+';
 			 strcpy(RecTab[rindex].SymbolMod, SymTab[0].Name);
 			 }
@@ -1245,7 +1245,7 @@ int main( int argc, char* argv[]){
 					else {
 						RecTab[rindex].opcode+=0x03;
 					}
-					printf("Opaddress: %X\n", RecTab[rindex].opaddress);
+					//printf("Opaddress: %X\n", RecTab[rindex].opaddress);
 				} else {
 					uniques=0; 
 					while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
@@ -1361,7 +1361,7 @@ int main( int argc, char* argv[]){
 		}
 		else if((strcmp(RecTab[RecIndex].RecordType,"M") == 0) && RecordOrder == 3)
 		{
-			if((RecTab[RecIndex].Length == 4) && (strcmp(operandsymbol, "@") != 0) && (strcmp(operandsymbol, "#") != 0)) {
+			if((RecTab[RecIndex].Length == 5) && (strcmp(operandsymbol, "@") != 0) && (strcmp(operandsymbol, "#") != 0)) {
 				//printf("%s%06X%02X%c%s\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].ModFlag, RecTab[RecIndex].SymbolMod);
 				fprintf(wp,"%s%06X%02X%c%s\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].ModFlag, RecTab[RecIndex].SymbolMod);
 			}
