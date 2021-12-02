@@ -1332,20 +1332,20 @@ int main( int argc, char* argv[]){
 			if(RecTab[RecIndex].ByteRecord != 1)
 			{
 				if(RecTab[RecIndex].Length == 1) {
-					//printf("%s%06X%02X%02X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode);
-					fprintf(wp,"%s%06X%02X%02X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode);
+					//printf("%s%06X%02X%02X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode);
+					fprintf(wp,"%s%06X%02X%02X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode);
 				}
 				else if(RecTab[RecIndex].Length == 2) {
-					//printf("%s%06X%02X%02X%01X%01X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].regAddress1, RecTab[RecIndex].regAddress2);
-					fprintf(wp,"%s%06X%02X%02X%01X%01X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].regAddress1, RecTab[RecIndex].regAddress2);
+					//printf("%s%06X%02X%02X%01X%01X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].regAddress1, RecTab[RecIndex].regAddress2);
+					fprintf(wp,"%s%06X%02X%02X%01X%01X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].regAddress1, RecTab[RecIndex].regAddress2);
 				}	
 				else if(RecTab[RecIndex].Length == 4) {
-					//printf("%s%06X%02X%02X10%04X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
-					fprintf(wp,"%s%06X%02X%02X10%04X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
+					//printf("%s%06X%02X%02X10%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
+					fprintf(wp,"%s%06X%02X%02X10%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
 				}
 				else {
-					//printf("%s%06X%02X%02X%01X%03X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
-					fprintf(wp,"%s%06X%02X%02X%01X%03X",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
+					//printf("%s%06X%02X%02X%01X%03X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
+					fprintf(wp,"%s%06X%02X%02X%01X%03X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
 				}
 			//old sic pass 2//printf("%s%06X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
 			//old sic pass 2//fprintf(wp,"%s%06X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
