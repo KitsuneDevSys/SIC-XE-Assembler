@@ -1296,6 +1296,7 @@ int main( int argc, char* argv[]){
 					RecTab[rindex].Length = 0x04;
 					RecTab[rindex].pcOrB = 0x10;
 					//printf("operandsymbol: %s\n", operandsymbol);
+					//printf("%d: %X\n",linectr,RecTab[rindex].pcOrB);
 					//When fprinting the object code, hard code "10" in between the opcode and opaddress
 					uniques=0;
 						while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
@@ -1350,6 +1351,7 @@ int main( int argc, char* argv[]){
 						RecTab[rindex].opcode+=0x03;
 					}
 					//printf("Opaddress: %X\n", RecTab[rindex].opaddress);
+					//printf("After %d: %X\n",linectr,RecTab[rindex].pcOrB);
 				} else {
 					uniques=0; 
 					while(SymTab[uniques].Name[1] != '\0') //used to get the address of the symbol from the operand from the SymTab
@@ -1446,10 +1448,14 @@ int main( int argc, char* argv[]){
 				}	
 				else if(RecTab[RecIndex].Length == 4) {
 					//printf("Format 4: %s%06X%02X%02X10%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
-					fprintf(wp,"%s%06X%02X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[rindex].pcOrB, RecTab[RecIndex].opaddress);
+					//printf("%02X\n",RecTab[RecIndex].pcOrB);
+					int a = RecTab[RecIndex].pcOrB;
+					fprintf(wp,"%s%06X%02X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, a, RecTab[RecIndex].opaddress);
+					//printf("%s%06X%02X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, a, RecTab[RecIndex].opaddress);
 				}
 				else if(RecTab[RecIndex].Length == 3) {
 					//printf("Format 3: %s%06X%02X%02X%01X%03X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
+					//printf("%X\n",RecTab[RecIndex].pcOrB);
 					fprintf(wp,"%s%06X%02X%02X%01X%03X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
 				}
 			//old sic pass 2//printf("%s%06X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
