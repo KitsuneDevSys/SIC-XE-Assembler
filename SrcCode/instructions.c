@@ -67,16 +67,21 @@ return		( 	! (
 }
 
 int FormatSpecifier(char *instructs, char opSymb) {
-	if(opSymb == '+') {
-		return 4;
-	}
-	else if((strcmp(instructs, "FIX") == 0) || (strcmp(instructs, "FLOAT") == 0) || (strcmp(instructs, "HIO") == 0) || (strcmp(instructs, "NORM") == 0) || (strcmp(instructs, "SIO") == 0) || (strcmp(instructs, "TIO") == 0)) {
-		return 1;
-	}
-	else if((strcmp(instructs, "ADDR") == 0) || (strcmp(instructs, "CLEAR") == 0) || (strcmp(instructs, "COMPR") == 0) || (strcmp(instructs, "DIVR") == 0) || (strcmp(instructs, "MULR") == 0) || (strcmp(instructs, "RMO") == 0) || (strcmp(instructs, "SHIFTL") == 0) || (strcmp(instructs, "SHIFTR") == 0) || (strcmp(instructs, "SUBR") == 0) || (strcmp(instructs, "SVC") == 0) || (strcmp(instructs, "TIXR") == 0)) {
-		return 2;
+	if((opSymb == '0') || (opSymb == '+')) {
+		if(opSymb == '+') {
+			return 4;
+		}
+		else if((strcmp(instructs, "FIX") == 0) || (strcmp(instructs, "FLOAT") == 0) || (strcmp(instructs, "HIO") == 0) || (strcmp(instructs, "NORM") == 0) || (strcmp(instructs, "SIO") == 0) || (strcmp(instructs, "TIO") == 0)) {
+			return 1;
+		}
+		else if((strcmp(instructs, "ADDR") == 0) || (strcmp(instructs, "CLEAR") == 0) || (strcmp(instructs, "COMPR") == 0) || (strcmp(instructs, "DIVR") == 0) || (strcmp(instructs, "MULR") == 0) || (strcmp(instructs, "RMO") == 0) || (strcmp(instructs, "SHIFTL") == 0) || (strcmp(instructs, "SHIFTR") == 0) || (strcmp(instructs, "SUBR") == 0) || (strcmp(instructs, "SVC") == 0) || (strcmp(instructs, "TIXR") == 0)) {
+			return 2;
+		}
+		else {
+			return 3;
+		}
 	}
 	else {
-		return 3;
+		return 0;
 	}
 }

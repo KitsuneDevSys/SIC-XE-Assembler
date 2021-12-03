@@ -523,15 +523,25 @@ int main( int argc, char* argv[]){
 			 holdsymbol = strtok_r(opcode, " +\t\n", &postfix); //removes + from opcode
 			 strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
 			 formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
+			 if(formatD[fiD] == 0) {
+				printf("ERROR: Invalid instruction format on line %d.\n", linectr);
+				fclose(fp);
+				return 0;
+			 }
 			 strcpy(nextoken, opcode); //copys opcode into nextoken
 			 //printf("Testing 2 within pass=1 new code\n");
 			 if( (nexoperand[0] == 35) || (nexoperand[0] == 64) )
 			 {
 				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
 			 }
-			 else
-			 {
+			 else if(((nexoperand[0] != '0') && (nexoperand[0] != '1') && (nexoperand[0] != '2') && (nexoperand[0] != '3') && (nexoperand[0] != '4') && (nexoperand[0] != '5') && (nexoperand[0] != '6') && (nexoperand[0] != '7') && (nexoperand[0] != '8') && (nexoperand[0] != '9')) || (strcmp(nextoken, "RSUB") == 0) || ((nexoperand[0] >= 65) && (nexoperand[0] <= 90)))
+			{
 				strcpy(operandsymbol,"0"); //Places a 0 if their is no symbol present
+			}
+			 else {
+				printf("ERROR: Invalid Operand Symbol on line %d.\n", linectr);
+				fclose(fp);
+				return 0;
 			 }
 			 //printf("TESTING 1 after new code in path == 1 part 1\n");
 			 holdsymbol = strtok(operand, " #@\t\n"); //extracts symbol from operand
@@ -578,7 +588,6 @@ int main( int argc, char* argv[]){
 							RecTab[rindex].opaddress += 0x10000; //Offsets opaddress by 10000 if an X postfix is present in the operand
 						}
 					    break;
-					 
 				  }
 				 uniques++;
 			    }
@@ -687,6 +696,11 @@ int main( int argc, char* argv[]){
 							regLi = 1;
 							break;
 						}
+						else if((ctCom == 1) && ((nexoperand[L] == 'S') || (nexoperand[L] == 'A') || (nexoperand[L] == 'R') || (nexoperand[L] == 'T') || (nexoperand[L] == 'P') || (nexoperand[L] == 'F') || (nexoperand[L] == 'L'))) {
+							printf("ERROR: Invalid register usage on line %d.\n", linectr);
+							fclose(fp);
+							return 0;
+						}
 						else {
 							ctCom = 0;
 						}
@@ -743,6 +757,7 @@ int main( int argc, char* argv[]){
 					//printf("TEST after\n");
 				} else if(formatD[fiD] == 4) {
 					RecTab[rindex].Length = 0x04;
+					RecTab[rindex].pcOrB = 0x10;
 					//printf("operandsymbol: %s\n", operandsymbol);
 					//When fprinting the object code, hard code "10" in between the opcode and opaddress
 					uniques=0;
@@ -758,6 +773,26 @@ int main( int argc, char* argv[]){
 							}
 							uniques++;
 						}
+					int ctCom = 0;
+					int lEnGtH = strlen(nexoperand);
+					for(int L = 0; L < lEnGtH; L++) {
+						if(nexoperand[L] == ',') {
+							ctCom++;
+							continue;
+						}
+						if((ctCom == 1) && (nexoperand[L] == 'X')) {
+							RecTab[rindex].pcOrB = 0x90;
+							break;
+						}
+						else if((ctCom == 1) && ((nexoperand[L] == 'S') || (nexoperand[L] == 'A') || (nexoperand[L] == 'R') || (nexoperand[L] == 'T') || (nexoperand[L] == 'P') || (nexoperand[L] == 'F') || (nexoperand[L] == 'L'))) {
+							printf("ERROR: Invalid register usage on line %d.\n", linectr);
+							fclose(fp);
+							return 0;
+						}
+						else {
+							ctCom = 0;
+						}
+					}
 					if(strcmp(operandsymbol, "@") == 0) {
 						RecTab[rindex].opcode+=0x02;
 					}
@@ -864,9 +899,14 @@ int main( int argc, char* argv[]){
 			{
 				strncpy(operandsymbol,nexoperand,1); //Copies symbol (#@) into operandsymbol
 			}
-			 else
+			else if(((nexoperand[0] != '0') && (nexoperand[0] != '1') && (nexoperand[0] != '2') && (nexoperand[0] != '3') && (nexoperand[0] != '4') && (nexoperand[0] != '5') && (nexoperand[0] != '6') && (nexoperand[0] != '7') && (nexoperand[0] != '8') && (nexoperand[0] != '9')) || (strcmp(nextoken, "RSUB") == 0) || ((nexoperand[0] >= 65) && (nexoperand[0] <= 90)))
 			{
 				strcpy(operandsymbol,"0"); //Places a 0 if their is no symbol present
+			}
+			else {
+				printf("ERROR: Invalid Operand Symbol on line %d.\n", linectr);
+				fclose(fp);
+				return 0;
 			}
 			holdsymbol = strtok(operand, " #@\t\n"); //extracts symbol from operand
 			if(holdsymbol != NULL)
@@ -890,6 +930,11 @@ int main( int argc, char* argv[]){
 			    strcpy(opcode, holdsymbol); //stores the modified opcode into the char array
 			    strcpy(nextoken, opcode); //copys opcode into nextoken
 				formatD[fiD] = FormatSpecifier(opcode, opcodesymbol[0]); //stores the format number of each instruction into array.
+				if(formatD[fiD] == 0) {
+					printf("ERROR: Invalid instruction format on line %d.\n", linectr);
+					fclose(fp);
+					return 0;
+			 	}
 			} //end if
 			//printf("|%s| is the string stored in operandtwo in pass !=1 \n",operandsymboltwo);
 			if( IsAValidSymbol(operandsymboltwo) != 0 ) //Used to check if operands that are symbols are within the symbol table
@@ -915,7 +960,7 @@ int main( int argc, char* argv[]){
 				printf("ERROR: referenced operand symbol is not located within the symbol table on line %d\n",linectr);
 				fclose(fp);
 				return 0;
-			}
+			} 
 			if((!(strcmp(nextoken, "START"))) == 1) //Sets the H record for the RecTab
 			{
 				strcat(hex,nexoperand);
@@ -1187,6 +1232,11 @@ int main( int argc, char* argv[]){
 							regLi = 1;
 							break;
 						}
+						else if((ctCom == 1) && ((nexoperand[L] == 'S') || (nexoperand[L] == 'A') || (nexoperand[L] == 'R') || (nexoperand[L] == 'T') || (nexoperand[L] == 'P') || (nexoperand[L] == 'F') || (nexoperand[L] == 'L'))) {
+							printf("ERROR: Invalid register usage on line %d.\n", linectr);
+							fclose(fp);
+							return 0;
+						}
 						else {
 							ctCom = 0;
 						}
@@ -1229,6 +1279,7 @@ int main( int argc, char* argv[]){
 								//printf("%d: Displacement: %X\n",linectr, RecTab[rindex].disp);
 							}
 							else {
+								//Normal SIC instruction, remove error.
 								printf("ERROR: Addresses out of bounds for PC and Base addressing on line %d.\n", linectr);
 								fclose(fp);
 								return 0;
@@ -1243,6 +1294,7 @@ int main( int argc, char* argv[]){
 					//printf("TEST after\n");
 				} else if(formatD[fiD] == 4) {
 					RecTab[rindex].Length = 0x04;
+					RecTab[rindex].pcOrB = 0x10;
 					//printf("operandsymbol: %s\n", operandsymbol);
 					//When fprinting the object code, hard code "10" in between the opcode and opaddress
 					uniques=0;
@@ -1258,6 +1310,26 @@ int main( int argc, char* argv[]){
 							}
 							uniques++;
 						}
+					int ctCom = 0;
+					int lEnGtH = strlen(nexoperand);
+					for(int L = 0; L < lEnGtH; L++) {
+						if(nexoperand[L] == ',') {
+							ctCom++;
+							continue;
+						}
+						if((ctCom == 1) && (nexoperand[L] == 'X')) {
+							RecTab[rindex].pcOrB = 0x90;
+							break;
+						}
+						else if((ctCom == 1) && ((nexoperand[L] == 'S') || (nexoperand[L] == 'A') || (nexoperand[L] == 'R') || (nexoperand[L] == 'T') || (nexoperand[L] == 'P') || (nexoperand[L] == 'F') || (nexoperand[L] == 'L'))) {
+							printf("ERROR: Invalid register usage on line %d.\n", linectr);
+							fclose(fp);
+							return 0;
+						}
+						else {
+							ctCom = 0;
+						}
+					}
 					if(strcmp(operandsymbol, "@") == 0) {
 						RecTab[rindex].opcode+=0x02;
 					}
@@ -1374,7 +1446,7 @@ int main( int argc, char* argv[]){
 				}	
 				else if(RecTab[RecIndex].Length == 4) {
 					//printf("Format 4: %s%06X%02X%02X10%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
-					fprintf(wp,"%s%06X%02X%02X10%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].opaddress);
+					fprintf(wp,"%s%06X%02X%02X%02X%04X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[rindex].pcOrB, RecTab[RecIndex].opaddress);
 				}
 				else if(RecTab[RecIndex].Length == 3) {
 					//printf("Format 3: %s%06X%02X%02X%01X%03X\n",RecTab[RecIndex].RecordType, RecTab[RecIndex].Address, RecTab[RecIndex].Length, RecTab[RecIndex].opcode, RecTab[RecIndex].pcOrB, RecTab[RecIndex].disp);
