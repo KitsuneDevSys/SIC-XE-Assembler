@@ -1,4 +1,8 @@
 # SIC-XE-Assembler
+## V1.0: December 2, 2021 Changelog
+- Format 4 fully implemented in Pass 2.
+- T and M records fully implemented.
+- Output to .obj file fully implemented.
 ## V0.4: November 29, 2021 Changelog
 - Format 1,2 and 3 fully implemented in Pass 2.
  - Printing of T Records of such will come later.
